@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-processor
+
+  labels:
+    component: grpc
+spec:
+  selector:
+    component: grpc
+  ports:
+  - name: websocket
+    port: 8017
+  - name: grpc
+    port: 9001
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc
+  namespace: lineblocs
+  labels:
+    component: grpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: grpc
+  template:
+    metadata:
+      labels:
+        component: grpc
+    spec:
+      containers:
+        - name: grpc-processor
+          image: lineblocs/grpc-proxy:master
+          ports:
+            - containerPort: 8017
+            - containerPort: 9001
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8017
+              httpHeaders:
+              - name: X-Health
+                value: health
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          env:
+            - name: LINEBLOCS_REGION
+              value: ca1
+            - name: DB_HOST
+              value: 104.248.107.119
+            - name: DB_USER
+              value: root
+            - name: DB_PASS
+              value: "4ChTXGuEUtrj6b4H"
+            - name: DB_NAME
+              value: lineblocs
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"

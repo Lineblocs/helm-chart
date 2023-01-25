@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: events-processor
+  namespace: lineblocs
+  labels:
+    component: events
+spec:
+  selector:
+    component: k8svents
+  ports:
+  - name: webhook
+    port: 80
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8svents
+  namespace: lineblocs
+  labels:
+    component: k8svents
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: k8svents
+  template:
+    metadata:
+      labels:
+        component: k8svents
+    spec:
+      containers:
+        - name: k8svents
+          image: atomist/k8svent
+          env:
+            - name: K8SVENT_WEBHOOKS
+              #value: http://events-processor/processEvent
+              value: http://127.0.0.1:8000/processEvent
+        - name: events-processor
+          image: lineblocs/k8s-events:master
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              value: CONFIGURED_DB_HOST
+            - name: DB_USER
+              value: CONFIGURED_DB_USER
+            - name: DB_PASS
+              value: CONFIGURED_DB_PASS
+            - name: DB_NAME
+              value: CONFIGURED_DB_NAME
