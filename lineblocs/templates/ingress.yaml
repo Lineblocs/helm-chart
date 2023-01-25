@@ -1,0 +1,142 @@
+{{- if .Values.web.ingress.enabled -}}
+{{- $fullName := include "application.fullname" . -}}
+{{- $svcPort := .Values.web.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "application.fullname" . }}-app-ingress
+  labels:
+    {{- include "application.labels" . | nindent 4 }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ $.Values.issuer.name }}
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.org/client-max-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "540"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "540"
+spec:
+  {{- if .Values.web.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.web.ingress.tls }}
+      secretName: {{ .Release.Name }}-cert
+  {{- end }}
+  rules:
+    - host: {{ .Values.web.ingress.tls }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-app
+                port:
+                  number: {{ $svcPort }}
+  {{- end }}
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: ingress
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     default-ssl-certificate: letsencrypt-prod
+#     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+#     #service.beta.kubernetes.io/do-loadbalancer-hostname: "lineblocs-test.com"
+#     ingress.kubernetes.io/proxy-body-size: "128m"
+#     nginx.org/proxy-connect-timeout: "30s"
+#     nginx.org/proxy-read-timeout: "20s"
+#     nginx.org/client-max-body-size: "128m"
+#     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+# spec:
+#   tls:
+#   - hosts:
+#     - lineblocs-test.com
+#     - app.lineblocs-test.com
+#     - editor.lineblocs-test.com
+#     - phpmyadmin.lineblocs-test.com
+#     - internals.lineblocs-test.com
+#     - prv.lineblocs-test.com
+#     - emailer.lineblocs-test.com
+#     - tsc.lineblocs-test.com
+#     secretName: hello-kubernetes-tls
+#   rules:
+#   - host: lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-com
+#           servicePort: 80
+#   - host: app.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-app
+#           servicePort: 80
+#   - host: editor.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-editor
+#           servicePort: 80
+#   - host: phpmyadmin.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: phpmyadmin-service
+#           servicePort: 80
+#   - host: internals.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-internals
+#           servicePort: 80
+#   - host: prv.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-prv
+#           servicePort: 80
+#   - host: emailer.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-emailer
+#           servicePort: 80
+#   - host: tsc.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-tsc-compiler
+#           servicePort: 80
+#   - host: s3fs.lineblocs-test.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: lineblocs-s3fs
+#           servicePort: 80
+#   - host: matomo.lbackups.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: matomo
+#           servicePort: 80
+#   - host: infinitet3ch.com
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: infinitetech-v5
+#           servicePort: 80
+#   - host: infinitete.ch
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: infinitetech-v5
+#           servicePort: 80
+#   - host: saasexpress.ca
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: saasexp
+#           servicePort: 80
