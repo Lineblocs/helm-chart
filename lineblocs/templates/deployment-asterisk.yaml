@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asterisk
+  namespace: lineblocs
+  labels:
+    component: asterisk
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: asterisk
+  template:
+    metadata:
+      labels:
+        component: asterisk
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: component
+                operator: In
+                values:
+                - asterisk
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: asterisk
+          image: lineblocs/asterisk:master
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "2048Mi"
+          env:
+            - name: ARI_PASSWORD
+              value: GENERATED_ARI_PASSWORD
+        #- name: natsgw
+        #  image: lineblocs/natsgw:latest
+        #  env:
+        #    - name: ARI_APPLICATION
+        #      value: lineblocs
+        #    - name: ARI_USERNAME
+        #      value: ariuser
+        #    - name: ARI_PASSWORD
+        #      value: ed3fd1f1bf85e0251fc4403010a14625
+        - name: apps
+          image: lineblocs/ari-apps:master
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          env:
+            - name: ARI_HOST
+              value: asterisk
+            - name: ARI_PORT
+              value: "8088"
+            - name: ARI_USERNAME
+              value: ariuser
+            - name: ARI_PASSWORD
+              value: GENERATED_ARI_PASSWORD
+            - name: ARI_USE_PROXY
+              value: "false"
+            - name: NATSGW_URL
+              value: nats://natshost:4222
+            - name: DEPLOYMENT_DOMAIN
+              value: CONFIGURED_DEPLOYMENT_DOMAIN
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/app/service.json"
+            - name: LOG_LEVEL
+              value: INFO
+            - name: LINEBLOCS_KEY
+              value: CONFIGURED_LINEBLOCS_KEY
+        - name: monitor
+          image: lineblocs/media-monitor:master
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          env:
+            - name: DB_HOST
+              value: 104.248.107.119
+            - name: DB_USER
+              value: root
+            - name: DB_PASS
+              value: "4ChTXGuEUtrj6b4H"
+            - name: DB_NAME
+              value: lineblocs
+            - name: AMI_HOST
+              value: 127.0.0.1
+            - name: AMI_PORT
+              value: "5038"
+            - name: AMI_USER
+              value: ami
+            - name: AMI_PASS
+              value: lineblocs-xxx
+            - name: NATSGW_URL
+              value: nats://natshost:4222
+            - name: LOG_LEVEL
+              value: INFO
+            - name: LINEBLOCS_KEY
+              value: xxx
+            - name: LINEBLOCS_REGION
+              value: ca-central-1
+      #nodeSelector:
+      #  mediaServerNode: 'true'
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: experimental
+        effect: NoSchedule

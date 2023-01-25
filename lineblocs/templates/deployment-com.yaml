@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lineblocs-com
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lineblocs-com
+
+  template:
+    metadata:
+      labels:
+        app: lineblocs-com
+    spec:
+      containers:
+      - name: app
+        image: lineblocs/site:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            httpHeaders:
+            - name: X-Health
+              value: health
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:
+          requests:
+            cpu: "64m"
+            memory: "32Mi"
+          limits:
+            cpu: "4096m"
+            memory: "16384Mi"
+        env:
+          - name: DEPLOYMENT_DOMAIN
+            value: lineblocs-test.com
+          - name: DB_HOST
+            value: dbcluster
+          - name: DB_USERNAME
+            value: dbuser
+          - name: DB_PASSWORD
+            value: 
+          - name: DB_NAME
+            value: lineblocs
+          - name: DB_OPENSIPS_DATABASE
+            value: CONFIGURED_OPENSIPS_DATABASE

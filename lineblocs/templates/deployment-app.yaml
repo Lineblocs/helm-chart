@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lineblocs-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lineblocs-app
+
+  template:
+    metadata:
+      labels:
+        app: lineblocs-app
+    spec:
+      containers:
+      - name: lineblocs-app
+        image: lineblocs/user-app:master
+        ports:
+        - containerPort: 80
+        env:
+          - name: DEPLOYMENT_DOMAIN
+            value: lineblocs-test.com
