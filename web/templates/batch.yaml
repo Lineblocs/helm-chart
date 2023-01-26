@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "application.fullname" . }}-migration"
+  labels:
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:
+  backoffLimit: 10
+  ttlSecondsAfterFinished: 900
+  template:
+    metadata:
+      name: "{{ include "application.fullname" . }}-migration"
+    spec:
+      imagePullSecrets:
+        - name: {{.Values.common.imagePullSecrets}}
+      restartPolicy: Never
+      containers:
+      - name: {{ include "application.fullname" . }}-db-migrations
+        image: {{ .Values.kokpit.migrate.repository }}:{{ .Values.kokpit.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.kokpit.migrate.pullPolicy }}
+        env:
+        {{- range $key, $value := .Values.configmap.kokpit.data }}
+        - name: {{ $key  }}
+          valueFrom:
+            configMapKeyRef:
+                name: kokpit-migration-configmap
+                key: {{ $key |   quote }}
+        {{- end }}
+        command: ["php",  "/composer/vendor/bin/phinx", "migrate"]
+

@@ -1,11 +1,10 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
- name: internals-hpa
- namespace: default
+ name: rtpproxy-hpa
 spec:
   minReplicas: 3
-  maxReplicas: 10
+  maxReplicas: 10000
   metrics:
     - type: Resource
       resource:
@@ -24,4 +23,4 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1
     kind: Deployment 
-    name: lineblocs-internals
+    name: rtpproxy

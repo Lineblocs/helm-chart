@@ -2,7 +2,6 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
  name: asterisk-hpa
- namespace: lineblocs
 spec:
   minReplicas: 3
   maxReplicas: 10000
