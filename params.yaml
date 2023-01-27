@@ -1,0 +1,35 @@
+ingress:
+  enabled: true
+  domain: lineblocs-example.com
+  custom_annotations: {}
+
+db:
+  host: "db-host.svc"
+  username: "username"
+  password: "password"
+  name: "lineblocs"
+  opensips: 
+    name: CONFIGURED_OPENSIPS_DATABASE
+
+etcd:
+  host: "http://etcd:2379"
+  username: root
+  password: "etcdpassword"
+
+common:
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
+      add:
+        - NET_BIND_SERVICE
