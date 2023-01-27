@@ -1,6 +1,6 @@
 apiVersion: v2
-name: lineblocs
-description: Lineblocs Helm Chart
+name: voip
+description: Lineblocs voip Helm Chart
 type: application
 version: 1.0.0
 appVersion: 1.0.0
