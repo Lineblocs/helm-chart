@@ -21,4 +21,4 @@ spec:
         - containerPort: 80
         env:
           - name: DEPLOYMENT_DOMAIN
-            value: lineblocs-test.com
+            value: {{ .Values.ingress.domain }}

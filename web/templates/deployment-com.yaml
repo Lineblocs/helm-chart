@@ -38,14 +38,14 @@ spec:
             memory: "16384Mi"
         env:
           - name: DEPLOYMENT_DOMAIN
-            value: lineblocs-test.com
+            value: {{ .Values.ingress.domain }}
           - name: DB_HOST
-            value: dbcluster
+            value: {{ .Values.db.host }}
           - name: DB_USERNAME
-            value: dbuser
+            value: {{ .Values.db.username }}
           - name: DB_PASSWORD
-            value: 
+            value: {{ .Values.db.password }}
           - name: DB_NAME
-            value: lineblocs
+            value: {{ .Values.db.name }}
           - name: DB_OPENSIPS_DATABASE
-            value: CONFIGURED_OPENSIPS_DATABASE
+            value:  {{ .Values.db.opensips.name }}

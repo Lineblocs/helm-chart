@@ -17,23 +17,23 @@ spec:
       containers:
       - env:
         - name: DB_HOST
-          value: mysql
+          value: {{ .Values.db.host }}
         - name: DB_USER
-          value: root
+          value: {{ .Values.db.username }}
         - name: DB_PASS
-          value: "4ChTXGuEUtrj6b4H"
+          value: {{ .Values.db.password }}
         - name: DB_NAME
-          value: lineblocs
+          value: {{ .Values.db.name }}
         - name: ETCD_ENDPOINT
-          value: http://etcd:2379
+          value:  {{ .Values.etcd.endpoint }}
         - name: ETCD_USERNAME
-          value: root
+          value:  {{ .Values.etcd.username }}
         - name: ETCD_PASSWORD
-          value: 
+          value: {{ .Values.etcd.password }}
         - name: USE_LIMIT_MIDDLEWARE
-          value: off
+          value: "off"
         - name: USE_TLS
-          value: off
+          value: "off"
         livenessProbe:
           httpGet:
             path: /healthz

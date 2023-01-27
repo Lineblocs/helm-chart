@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "application.fullname" . }}-app-ingress
+  name: {{ include "application.fullname" . }}-web-ingress
   labels:
     {{- include "application.labels" . | nindent 4 }}
   annotations:
@@ -19,29 +19,23 @@ metadata:
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    {{- range $key, $value := .Values.ingress.custom_annotations }}
+    {{ $key  }}: {{ $value |   quote }}
+    {{- end }}
 spec:
-  {{- if .Values.web.ingress.tls }}
   tls:
     - hosts:
-        - {{ .Values.web.ingress.tls }}
-        - {{ .Values.app.ingress.tls }}
-        - {{ .Values.editor.ingress.tls }}
-        - {{ .Values.pma.ingress.tls }}
-        - {{ .Values.internal.ingress.tls }}
-        - {{ .Values.prv.ingress.tls }}
-        - {{ .Values.emailer.ingress.tls }}
-        - {{ .Values.tsc.ingress.tls }}
+        - {{ .Values.ingress.domain }}
       secretName: {{ .Release.Name }}-cert
-  {{- end }}
   rules:
-    - host: {{ .Values.web.ingress.tls }}
+    - host: {{ .Values.ingress.domain }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ $fullName }}-app
+                name: {{ $fullName }}-web
                 port:
                   number: {{ $svcPort }}
   {{- end }}

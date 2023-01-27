@@ -1,0 +1,19 @@
+issuer:
+  name: letsencrypt-prod
+
+web:
+  migrate:
+    repository: lineblocs/user-app
+    tag: master
+  service:
+    port: 80
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths: []
+    secretName: web-tls
+    tls: []
+  data: []  
+    
