@@ -25,10 +25,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.ingress.domain }}
+        - {{ .Values.deployment_domain }}
       secretName: {{ .Release.Name }}-cert
   rules:
-    - host: {{ .Values.ingress.domain }}
+    - host: {{ .Values.deployment_domain }}
       http:
         paths:
           - path: /

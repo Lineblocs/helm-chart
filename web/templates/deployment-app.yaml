@@ -21,4 +21,4 @@ spec:
         - containerPort: 80
         env:
           - name: DEPLOYMENT_DOMAIN
-            value: {{ .Values.ingress.domain }}
+            value: {{ .Values.deployment_domain }}
