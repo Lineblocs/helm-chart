@@ -1,7 +1,11 @@
+lineblocs_key: ""
+deployment_domain: lineblocs-example.com
+
 ingress:
   enabled: true
-  domain: lineblocs-example.com
   custom_annotations: {}
+
+
 
 db:
   host: "db-host.svc"
