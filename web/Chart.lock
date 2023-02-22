@@ -1,0 +1,15 @@
+dependencies:
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.11.0
+- name: pxc-operator
+  repository: https://percona.github.io/percona-helm-charts
+  version: 1.12.1
+- name: pxc-db
+  repository: https://percona.github.io/percona-helm-charts
+  version: 1.12.0
+- name: etcd
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.7.5
+digest: sha256:1a152d4c569aa57d368ee3f33b185b07b0e5e7caa2e6f3972b29820698f624fe
+generated: "2023-02-23T01:35:11.132034+05:30"

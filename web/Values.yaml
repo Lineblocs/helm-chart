@@ -1,0 +1,100 @@
+deploymentDomain:
+
+app:
+  image:
+    repository: lineblocs/user-app
+    tag: master
+
+# number of replicas for com https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
+com:
+  replicas: 1
+  image:
+    repository: lineblocs/site
+    tag: master
+    pullPolicy: IfNotPresent
+  ports:
+    - 8080
+  deploymentDomain:
+  livenessProbe:
+    path: /healthz
+    port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 3
+  resources:
+    requests:
+      cpu:
+      memory:
+    limit:
+      cpu:
+      memory:
+
+tsBindings:
+  replicas: 1
+  image:
+    repository: lineblocs/tsc-bindings
+    tag: master
+
+
+perconaoperator:
+  enabled: true
+  imagePullPolicy: IfNotPresent
+  replicaCount: 1
+  disableTelemetry: true
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+
+
+db:
+  username: lineblocs
+  password:
+  database: lineblocs
+  opensipsDatabase:
+
+  enabled: true
+  backup:
+    enabled: false
+  pxc:
+    persistence:
+      enabled: false
+  secrets:
+    passwords:
+      root: rootlineblocs
+
+certmanager:
+  enabled: false
+
+internalApi:
+  useLimitMiddleware: off
+  useTls: off
+  replicas: 1
+  livenessProbe:
+    path: /healthz
+    port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 3
+  image:
+    repository: lineblocs/internals-api
+    tag: master
+    pullPolicy: IfNotPresent
+  ports:
+    - 80
+    - 9999
+  resources:
+    requests:
+      cpu:
+      memory:
+    limit:
+      cpu:
+      memory:
+  service:
+    type: ClusterIP
+
+etcd:
+  enabled: true
+  # TODO change this default
+  persistence:
+    enabled: false
+  service:
+    enabled: false

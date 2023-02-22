@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lineblocs.fullname" . }}-com
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "lineblocs.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ include "lineblocs.chart" . }}
+
+spec:
+  replicas: {{ .Values.com.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "lineblocs.name" . }}-com
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "lineblocs.name" . }}-com
+    spec:
+      containers:
+        - name: linelocs-app
+          image: {{ printf "%s:%s" .Values.com.image.repository .Values.com.image.tag }}
+          imagePullPolicy: {{ .Values.com.image.pullPolicy }}
+          ports:
+            {{- range .Values.com.ports }}
+            - containerPort: {{ . }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.com.livenessProbe.path }}
+              port: {{ .Values.com.livenessProbe.port }}
+              httpHeaders:
+                - name: X-Health
+                  value: health
+            initialDelaySeconds: {{ .Values.com.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.com.livenessProbe.periodSeconds }}
+          resources:
+            requests:
+              cpu: {{ default "64m" .Values.com.resources.requests.cpu }}
+              memory: {{ default "32Mi" .Values.com.resources.requests.cpu }}
+            limits:
+              cpu: {{ default "4096m" .Values.com.resources.limit.cpu }}
+              memory: {{ default "16384Mi" .Values.com.resources.limit.memory }}
+          env:
+            - name: DEPLOYMENT_DOMAIN
+              value: {{ .Values.deploymentDomain }}
+            - name: DB_HOST
+              value: {{ include "db.hostname" . }}
+            - name: DB_USERNAME
+              value: {{ .Values.db.username }}
+            - name: DB_PASSWORD
+              value: {{ .Values.db.password }}
+            - name: DB_NAME
+              value: {{ .Values.db.database }}
+            - name: DB_OPENSIPS_DATABASE
+              value: {{ .Values.db.opensipsDatabase }}

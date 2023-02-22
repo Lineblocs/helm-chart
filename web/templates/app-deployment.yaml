@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "lineblocs.fullname" . }}-app
+  labels:
+    app.kubernetes.io/name: {{ include "lineblocs.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ include "lineblocs.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "lineblocs.name" . }}-app
+      app.kubernetes.io/instance: {{ .Release.Name }}
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "lineblocs.name" . }}-app
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: lineblocs-app
+          image: {{ printf "%s:%s" .Values.app.image.repository .Values.app.image.tag }}
+          # TODO
+          ports:
+            - containerPort: 80
+          env:
+            - name: DEPLOYMENT_DOMAIN
+              value: {{ .Values.deploymentDomain }}
