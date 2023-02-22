@@ -5,6 +5,12 @@ app:
     repository: lineblocs/user-app
     tag: master
 
+editor:
+  replicas: 1
+  image:
+    repository: lineblocs/flow-designer
+    tag: master
+
 # number of replicas for com https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
 com:
   replicas: 1
