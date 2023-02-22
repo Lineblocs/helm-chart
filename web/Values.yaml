@@ -1,5 +1,13 @@
 deploymentDomain:
 
+letsencryptEmail:
+
+letsencryptServer:
+
+ingress:
+  enabled:
+  ingressClassName:
+
 app:
   image:
     repository: lineblocs/user-app
@@ -75,7 +83,8 @@ db:
       root: rootlineblocs
 
 certmanager:
-  enabled: false
+  enabled: true
+  installCRDs: false # installed as part of this chart
 
 internalApi:
   useLimitMiddleware: off
