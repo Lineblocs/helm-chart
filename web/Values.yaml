@@ -41,6 +41,12 @@ tsBindings:
     tag: master
 
 
+routeeditor:
+  replicas:
+  image:
+    repository: lineblocs/call-route-editor
+    tag: master
+
 perconaoperator:
   enabled: true
   imagePullPolicy: IfNotPresent
