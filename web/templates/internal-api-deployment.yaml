@@ -1,62 +1,47 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "lineblocs.fullname" . }}-internals
-  labels:
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    app.kubernetes.io/name: {{ include "lineblocs.name" . }}
-    helm.sh/chart: {{ include "lineblocs.chart" . }}
+  {{- include "resource.metadata" (dict "name" "internals" "context" .) }}
 
 spec:
   replicas: {{ .Values.internalApi.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "lineblocs.name" }}-internals
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "resource.matchLabels" (dict "name" "internals" "context" .) | indent 6 }}
 
   template:
     metadata:
       labels:
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: {{ include "lineblocs.name" . }}-internals
+        {{- include "resource.matchLabels" (dict "name" "internals" "context" .) | indent 8 }}
     spec:
       containers:
         - env:
-            - name: DB_HOST
-              value: {{ include "db.hostname" . }}
-            - name: DB_USER
-              value: {{ .Values.db.username }}
-            - name: DB_PASS
-              value: {{ .Values.db.password }}
-            - name: DB_NAME
-              value: {{ .Values.db.database }}
-            - name: ETCD_ENDPOINT
-              value: {{ include "lineblocs.etcd.host" . }}
-            - name: ETCD_USERNAME
-              value: root
-            - name: ETCD_PASSWORD
-              value: {{ .Values.etcd.auth.rbac.rootPassword }}
+            {{- include "mysql.env" . | indent 12 }}
+            {{- include "etcd.env" . | indent 12 }}
             - name: USE_LIMIT_MIDDLEWARE
               value: {{ .Values.internalApi.useLimitMiddleware | quote }}
             - name: USE_TLS
               value: {{ .Values.internalApi.useTls | quote }}
+          {{- if .Values.internalApi.extraEnv }}
+            {{- toYaml .Values.internalApi.extraEnv | nindent 12 }}
+          {{- end }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.internalApi.livenessProbe.path }}
-              port: {{ .Values.internalApi.livenessProbe.port }}
+              path: /healthz
+              port: 80
               httpHeaders:
                 - name: X-Health
                   value: health
-            initialDelaySeconds: {{ .Values.internalApi.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.internalApi.livenessProbe.periodSeconds }}
-          name: lineblocs-internals
-          image: {{ printf "%s:%s" .Values.internalApi.image.repository .Values.internalApi.image.tag }}
-          imagePullPolicy: {{ .Values.internalApi.image.pullPolicy }}
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          name: {{ include "resource.name" (dict "name" "internals" "context" .) }}
+          {{ $repository := default "lineblocs/internals-api" .Values.internalApi.image.repository }}
+          {{ $tag := default "master" .Values.internalApi.image.tag }}
+          image: {{ printf "%s:%s" $repository $tag }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.internalApi.image.pullPolicy }}
           ports:
-            {{- range .Values.internalApi.ports }}
-            - containerPort: {{ . }}
-            {{- end }}
+            - containerPort: 80
+            - containerPort: 9999
           resources:
             requests:
               cpu: {{ default "10m" .Values.internalApi.resources.requests.cpu }}

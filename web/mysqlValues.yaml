@@ -1,0 +1,6 @@
+auth:
+  rootPassword: lineblocs
+  createDatabase: true
+  username: debdut
+  password: debdut
+  database: debdut

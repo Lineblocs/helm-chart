@@ -1,30 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "lineblocs.fullname" . }}-app
-  labels:
-    app.kubernetes.io/name: {{ include "lineblocs.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    helm.sh/chart: {{ include "lineblocs.chart" . }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- include "resource.metadata" (dict "name" "app" "context" .) }}
 
 spec:
-  replicas: 1
+  replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "lineblocs.name" . }}-app
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "resource.matchLabels" (dict "name" "app" "context" .) | indent 6 }}
 
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "lineblocs.name" . }}-app
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "resource.matchLabels" (dict "name" "app" "context" .) | indent 8 }}
     spec:
       containers:
-        - name: lineblocs-app
-          image: {{ printf "%s:%s" .Values.app.image.repository .Values.app.image.tag }}
-          # TODO
+        - name: {{ include "resource.name" (dict "name" "app" "context" .) }}
+          {{- $repository := default "lineblocs/user-app" .Values.app.image.repository }}
+          {{- $tag := default "master" .Values.app.image.tag }}
+          image: {{ printf "%s:%s" $repository $tag }}
           ports:
             - containerPort: 80
           env:

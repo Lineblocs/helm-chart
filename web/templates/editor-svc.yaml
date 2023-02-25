@@ -1,17 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "lineblocs.fullname" . }}-editor
-  labels:
-    app.kubernetes.io/name: {{ include "lineblocs.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "lineblocs.chart" . }}
+  {{- include "resource.metadata" (dict "name" "editor" "context" .) }}
+
 spec:
-  type: ClusterIP
+  type: {{ default "ClusterIP" .Values.editor.service.type }}
   ports:
     - port: 80
       targetPort: 80
   selector:
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: {{ include "lineblocs.name" . }}-editor
+    {{- include "resource.matchLabels" (dict "name" "editor" "context" .) | indent 4 }}

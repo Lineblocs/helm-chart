@@ -4,113 +4,62 @@ letsencryptEmail:
 
 letsencryptServer:
 
+opensipsDatabase:
+
 ingress:
   enabled:
   ingressClassName:
 
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/01-app.yml
 app:
-  image:
-    repository: lineblocs/user-app
-    tag: master
+  replicas: 1
+  image: {}
+  service: {}
 
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/04-editor.yml
 editor:
   replicas: 1
-  image:
-    repository: lineblocs/flow-designer
-    tag: master
+  image: {}
+  service: {}
 
-# number of replicas for com https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
 com:
+  service: {}
   replicas: 1
-  image:
-    repository: lineblocs/site
-    tag: master
-    pullPolicy: IfNotPresent
-  ports:
-    - 8080
-  deploymentDomain:
-  livenessProbe:
-    path: /healthz
-    port: 80
-    initialDelaySeconds: 3
-    periodSeconds: 3
+  image: {}
   resources:
-    requests:
-      cpu:
-      memory:
-    limit:
-      cpu:
-      memory:
+    requests: {}
+    limit: {}
 
 tsBindings:
   replicas: 1
-  image:
-    repository: lineblocs/tsc-bindings
-    tag: master
+  image: {}
+  service: {}
 
-
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/05-routeeditor.yml
 routeeditor:
-  replicas:
-  image:
-    repository: lineblocs/call-route-editor
-    tag: master
-
-perconaoperator:
-  enabled: true
-  imagePullPolicy: IfNotPresent
-  replicaCount: 1
-  disableTelemetry: true
-  rbac:
-    create: true
-  serviceAccount:
-    create: true
-
-
-db:
-  username: lineblocs
-  password:
-  database: lineblocs
-  opensipsDatabase:
-
-  enabled: true
-  backup:
-    enabled: false
-  pxc:
-    persistence:
-      enabled: false
-  secrets:
-    passwords:
-      root: rootlineblocs
+  replicas: 1
+  image: {}
+  service: {}
 
 certmanager:
-  enabled: true
+  enabled: false
   installCRDs: false # installed as part of this chart
 
+
+##############
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/06-internals.yml
 internalApi:
+  replicas: 1
+  image: {}
+  resources:
+    requests: {}
+    limit: {}
+  service:
+    type: ""
   useLimitMiddleware: off
   useTls: off
-  replicas: 1
-  livenessProbe:
-    path: /healthz
-    port: 80
-    initialDelaySeconds: 3
-    periodSeconds: 3
-  image:
-    repository: lineblocs/internals-api
-    tag: master
-    pullPolicy: IfNotPresent
-  ports:
-    - 80
-    - 9999
-  resources:
-    requests:
-      cpu:
-      memory:
-    limit:
-      cpu:
-      memory:
-  service:
-    type: ClusterIP
 
 etcd:
   enabled: true
@@ -119,3 +68,16 @@ etcd:
     enabled: false
   service:
     enabled: false
+
+
+externalMysqlHost: "some"
+externalMysqlUser: "debdut"
+externalMysqlPassword: "debdut"
+externalMysqlDatabase: "debdut"
+externalMysqlRootPassword: "root"
+
+externalEtcdHost: ""
+externalEtcdRootPassword: ""
+
+mysql:
+  enabled: true

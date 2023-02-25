@@ -11,7 +11,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "lineblocs.fullname" -}}
-{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- $name := include "lineblocs.name" . }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -23,24 +23,46 @@ If release name contains chart name it will be used as a full name.
 Create chart name and version as used by the chart label.
 */}}
 {{- define "lineblocs.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "lineblocs.name" .) .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
-{{- define "lineblocs.labels" -}}
-helm.sh/chart: {{ include "lineblocs.chart" . }}
-{{ include "lineblocs.selectorLabels" . }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- define "toBool" -}}
+    {{- not (eq . "") -}}
+{{- end -}}
+
+{{/*Get the resource name appended with the resource name
+Usage:
+include "resource.name" (dict "name" "$name" "context" .)*/}}
+{{- define "resource.name" }}
+    {{- if eq .name "" }}
+        {{- include "lineblocs.fullname" .context }}
+    {{- else }}
+        {{- printf "%s-%s" (include "lineblocs.fullname" .context) .name }}
+    {{- end }}
 {{- end }}
 
-{{/*
-Selector labels
-*/}}
-{{- define "lineblocs.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "lineblocs.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{/*Generate metadata depending on resource name*/}}
+{{/*Usage:*/}}
+{{/*include "resource.metadata" (dict "name" "$name" "context" .)*/}}
+{{- define "resource.metadata" }}
+  name: {{ include "resource.name" (dict "name" .name "context" .context) | quote }}
+  labels:
+  {{- with .context }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/name: {{ include "lineblocs.name" . | quote }}
+    helm.sh/chart: {{ include "lineblocs.chart" . | quote }}
+  {{- end }}
+{{- end }}
+
+{{/*Generate match labels*/}}
+{{/*Usage:*/}}
+{{/*include "resource.matchLabels" (dict "name" "$name" "context" .)*/}}
+{{- define "resource.matchLabels" }}
+app.kubernetes.io/name: {{ include "resource.name" (dict "name" .name "context" .context) | quote }}
+    {{- with .context }}
+app.kubernetes.io/instance: {{ quote .Release.Name }}
+    {{- end }}
 {{- end }}
 
 {{/*
@@ -54,29 +76,61 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{/*Percona hostname*/}}
-{{- define "db.hostname" -}}
-    {{- $fullname := printf "%s-db" .Release.Name }}
-    {{- $namespace := .Release.Namespace }}
-    {{- if .Values.db.proxysql.enabled }}
-        {{- printf "%s-proxysql.%s.svc.cluster.local" $fullname $namespace }}
+
+{{- define "etcd.host" }}
+    {{- ne .Values.externalEtcdHost "" | ternary .Values.externalEtcdHost (printf "%s-etcd-headless.%s.cluster.local" .Release.Name .Release.Namespace) }}
+{{- end }}
+
+{{- define "etcd.env" }}
+- name: ETCD_ENDPOINT
+  value: {{ include "etcd.host" . | quote }}
+- name: ETCD_USERNAME
+  value: "root"
+- name: ETCD_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.etcd.enabled | ternary (printf "%s-etcd" .Release.Name) (include "lineblocs.fullname" .) }}
+      key: etcd-root-password
+      optional: false
+{{- end }}
+
+{{- define "mysql.host" }}
+    {{- if .Values.externalMysqlHost }}
+        {{- .Values.externalMysqlHost }}
     {{- else }}
-        {{- printf "%s-haproxy.%s.svc.cluster.local" $fullname $namespace }}
+        {{- printf "%s-mysql-headless.%s.cluster.local" .Release.Name .Release.Namespace }}
     {{- end }}
 {{- end }}
 
-
-{{/*Get com/backend image name*/}}
-{{- define "lineblocs.web.image" }}
-    {{ $image := .Values.com.image.repository }}
-    {{ $tag := .Values.com.image.tag }}
-    {{ printf "%s:%s" $image $tag }}
+{{- define "mysql.user" }}
+    {{- if .Values.externalMysqlUser }}
+        {{- .Values.externalMysqlUser }}
+    {{- else }}
+        {{- .Values.mysql.auth.password }}
+    {{- end }}
 {{- end }}
 
-{{- define "lineblocs.etcd.fullname" }}
-    {{- printf "%s-%s-headless" .Release.Name "etcd" | trunc 63 -}}
+{{- define "mysql.database" }}
+    {{- if .Values.externalMysqlPassword }}
+        {{- .Values.externalMysqlDatabase }}
+    {{- else }}
+        {{- .Values.mysql.auth.database }}
+    {{- end }}
 {{- end }}
 
-{{- define "lineblocs.etcd.host" }}
-    {{- printf "http://%s:%0.f" (include "lineblocs.etcd.fullname" .) .Values.etcd.service.ports.client }}
+{{- define "mysql.env" }}
+- name: DB_HOST
+  value: {{ include "mysql.host" . | quote }}
+- name: DB_USER
+{{- /*    {{- $username := ne .Values.externalMysqlUser "" | ternary .Values.externalMysqlUser (include "common.utils.getValueFromKey" (dict "key" ".Values.mysql.auth.username" "context" .)) }}*/}}
+  value: {{ include "mysql.user" $ }}
+- name: DB_PASS
+  valueFrom:
+    secretKeyRef:
+{{- /*    Uses own secret if external mysql is being used*/}}
+      name: {{ ternary (printf "%s-mysql" .Release.Name) (include "lineblocs.fullname" .) .Values.mysql.enabled }}
+      key: mysql-password
+      optional: false
+- name: DB_NAME
+  value: {{ include "mysql.database" $ }}
 {{- end }}

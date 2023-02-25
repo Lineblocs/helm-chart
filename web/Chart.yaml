@@ -10,17 +10,22 @@ dependencies:
     version: v1.11.0
     repository: https://charts.jetstack.io
     condition: certmanager.enabled
-  - name: pxc-operator
-    condition: perconaoperator.enabled
-    version: 1.12.1
-    repository: https://percona.github.io/percona-helm-charts
-    alias: perconaoperator
-  - name: pxc-db
-    condition: db.enabled
-    version: 1.12.0
-    repository: https://percona.github.io/percona-helm-charts
-    alias: db
+      # TODO maybe include this later
+  # - name: pxc-operator
+  #   condition: perconaoperator.enabled
+  #   version: 1.12.1
+  #   repository: https://percona.github.io/percona-helm-charts
+  #   alias: perconaoperator
+  # - name: pxc-db
+  #   condition: db.enabled
+  #   version: 1.12.0
+  #   repository: https://percona.github.io/percona-helm-charts
+  #   alias: db
   - name: etcd
     repository: https://charts.bitnami.com/bitnami
     condition: etcd.enabled
     version: 8.x.x
+  - name: mysql
+    repository: https://charts.bitnami.com/bitnami
+    condition: mysql.enabled
+    version: 9.x.x

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "resource.metadata" (dict "name" "ts-binding" "context" .) }}
+
+spec:
+  replicas: {{ .Values.tsBindings.replicas }}
+  selector:
+    matchLabels:
+      {{- include "resource.matchLabels" (dict "name" "ts-binding" "context" .) | indent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "resource.matchLabels" (dict "name" "ts-binding" "context" .) | indent 8 }}
+    spec:
+      containers:
+        - name: {{ include "resource.name" (dict "name" "ts-binding" "context" .) }}
+          {{ $repository := default "lineblocs/ts-bindings" .Values.tsBindings.image.repository }}
+          {{ $tag := default "master" .Values.tsBindings.image.tag }}
+          image: {{ printf "%s:%s" $repository $tag }}
+          ports:
+            - containerPort: 8080
