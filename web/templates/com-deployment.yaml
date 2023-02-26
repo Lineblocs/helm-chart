@@ -15,6 +15,7 @@ spec:
         {{- include "resource.matchLabels" (dict "name" "com" "context" .) | indent 8 }}
 
     spec:
+      initContainers: {{- include "lineblocs.databaseWaitInitContainers" (dict "key" "com" "context" .) | nindent 8 }}
       containers:
         - name: {{ include "resource.name" (dict "name" "com" "context" .) }}
           {{- $repository := default "lineblocs/site" .Values.com.image.repository }}
@@ -41,7 +42,7 @@ spec:
               memory: {{ default "16384Mi" .Values.internalApi.resources.limit.memory }}
           env:
             - name: DEPLOYMENT_DOMAIN
-              value: {{ .Values.deploymentDomain | quote }}
-            {{- include "mysql.env" . | indent 12 }}
+              value: {{ include "lineblocs.deploymentDomain" . }}
+            {{- include "lineblocs.mysql.env" . | indent 12 }}
             - name: DB_OPENSIPS_DATABASE
               value: {{ .Values.opensipsDatabase | quote }}

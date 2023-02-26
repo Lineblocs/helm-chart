@@ -25,3 +25,6 @@ spec:
           env:
             - name: DEPLOYMENT_DOMAIN
               value: {{ .Values.deploymentDomain }}
+              {{- if .Values.editor.extraEnv }}
+                {{- toYaml .Values.editor.extraEnv | nindent 12 }}
+              {{- end }}

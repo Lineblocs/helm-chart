@@ -1,14 +1,19 @@
-deploymentDomain:
+deploymentDomain: demo.com
 
 letsencryptEmail:
 
 letsencryptServer:
 
-opensipsDatabase:
+opensipsDatabase: opensips
 
 ingress:
   enabled:
   ingressClassName:
+  customAnnotations: {}
+  tls:
+    existingSecret:
+
+nginx:
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/01-app.yml
 app:
@@ -31,13 +36,13 @@ com:
     requests: {}
     limit: {}
 
-tsBindings:
+tsBinding:
   replicas: 1
   image: {}
   service: {}
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/05-routeeditor.yml
-routeeditor:
+routeEditor:
   replicas: 1
   image: {}
   service: {}
@@ -45,7 +50,6 @@ routeeditor:
 certmanager:
   enabled: false
   installCRDs: false # installed as part of this chart
-
 
 ##############
 
@@ -63,21 +67,27 @@ internalApi:
 
 etcd:
   enabled: true
-  # TODO change this default
   persistence:
     enabled: false
   service:
     enabled: false
 
 
-externalMysqlHost: "some"
-externalMysqlUser: "debdut"
-externalMysqlPassword: "debdut"
-externalMysqlDatabase: "debdut"
-externalMysqlRootPassword: "root"
+externalMysqlHost: ""
+externalMysqlUser: ""
+externalMysqlPassword: ""
+externalMysqlDatabase: ""
+externalMysqlRootPassword: ""
 
 externalEtcdHost: ""
 externalEtcdRootPassword: ""
 
+initDb: true
+
 mysql:
   enabled: true
+  auth:
+    rootPassword: root
+    username: debdut
+    password: debdut
+    database: lineblocs

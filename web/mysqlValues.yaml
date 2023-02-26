@@ -1,4 +1,5 @@
 auth:
+  architecture: replication
   rootPassword: lineblocs
   createDatabase: true
   username: debdut

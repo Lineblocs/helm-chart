@@ -1,23 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  {{- include "resource.metadata" (dict "name" "internals" "context" .) }}
+  {{- include "resource.metadata" (dict "name" "internalApi" "context" .) }}
 
 spec:
   replicas: {{ .Values.internalApi.replicas }}
   selector:
     matchLabels:
-      {{- include "resource.matchLabels" (dict "name" "internals" "context" .) | indent 6 }}
+      {{- include "resource.matchLabels" (dict "name" "internalApi" "context" .) | indent 6 }}
 
   template:
     metadata:
       labels:
-        {{- include "resource.matchLabels" (dict "name" "internals" "context" .) | indent 8 }}
+        {{- include "resource.matchLabels" (dict "name" "internalApi" "context" .) | indent 8 }}
     spec:
+      initContainers: {{- include "lineblocs.databaseWaitInitContainers" (dict "key" "internalApi" "context" .) | nindent 8 }}
+      restartPolicy: Always
       containers:
         - env:
-            {{- include "mysql.env" . | indent 12 }}
-            {{- include "etcd.env" . | indent 12 }}
+            {{- include "lineblocs.mysql.env" . | indent 12 }}
+            {{- include "lineblocs.etcd.env" . | indent 12 }}
             - name: USE_LIMIT_MIDDLEWARE
               value: {{ .Values.internalApi.useLimitMiddleware | quote }}
             - name: USE_TLS
@@ -34,7 +36,7 @@ spec:
                   value: health
             initialDelaySeconds: 3
             periodSeconds: 3
-          name: {{ include "resource.name" (dict "name" "internals" "context" .) }}
+          name: {{ include "resource.name" (dict "name" "internalApi" "context" .) }}
           {{ $repository := default "lineblocs/internals-api" .Values.internalApi.image.repository }}
           {{ $tag := default "master" .Values.internalApi.image.tag }}
           image: {{ printf "%s:%s" $repository $tag }}
