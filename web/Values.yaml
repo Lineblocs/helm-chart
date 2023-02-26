@@ -1,4 +1,4 @@
-deploymentDomain: rocketchat.shop
+deploymentDomain:
 
 letsencryptEmail: test@lineblocs.com
 
@@ -18,7 +18,7 @@ ingress:
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/01-app.yml
 app:
-  domain: app.rocketchat.shop
+  domain: app.
   replicas: 1
   image: {}
   service: {}
@@ -28,27 +28,27 @@ editor:
   replicas: 1
   image: {}
   service: {}
-  domain: editor.rocketchat.shop
+  domain: editor.
 
 tsBinding:
   replicas: 1
   image: {}
   service: {}
-  domain: tsbinding.rocketchat.shop
+  domain: tsbinding.
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/05-routeeditor.yml
 routeEditor:
   replicas: 1
   image: {}
   service: {}
-  domain: route.rocketchat.shop
+  domain: route.
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
 com:
   service: {}
   replicas: 1
   image: {}
-  domain: com.rocketchat.shop
+  domain: com.
   resources:
     requests: {}
     limit: {}
@@ -63,7 +63,7 @@ internalApi:
     type: ""
   useLimitMiddleware: off
   useTls: off
-  domain: internal.rocketchat.shop
+  domain: internal.
 
 certmanager:
   enabled: false
