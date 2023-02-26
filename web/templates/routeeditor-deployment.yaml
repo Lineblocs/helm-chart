@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "resource.metadata" (dict "name" "routeEditor" "context" $) }}
+
+spec:
+  replicas: {{ .Values.routeEditor.replicas }}
+  selector:
+    matchLabels:
+      {{- include "resource.matchLabels" (dict "name" "routeEditor" "context" $) | indent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "resource.matchLabels" (dict "name" "routeEditor" "context" $) | indent 8 }}
+    spec:
+      containers:
+        - name: {{ include "resource.name" (dict "name" "routeEditor" "context" $) }}
+          {{ $repository := default "lineblocs/call-route-editor" .Values.routeEditor.image.repository }}
+          {{ $tag := default "master" .Values.routeEditor.image.tag }}
+          image: {{ printf "%s:%s" $repository $tag }}
+          ports:
+            - containerPort: 8005

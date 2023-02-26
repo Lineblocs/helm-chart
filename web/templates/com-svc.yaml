@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  {{- include "resource.metadata" (dict "name" "com" "context" .) }}
+spec:
+  type: {{ default "ClusterIP" .Values.com.service.type }}
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    {{- include "resource.matchLabels" (dict "name" "com" "context" .) | indent 4 }}

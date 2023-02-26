@@ -1,136 +1,33 @@
-{{- if .Values.web.ingress.enabled -}}
-{{- $fullName := include "application.fullname" . -}}
-{{- $svcPort := .Values.web.service.port -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "application.fullname" . }}-web-ingress
-  labels:
-    {{- include "application.labels" . | nindent 4 }}
+  {{- include "resource.metadata" (dict "name" "" "context" .) }}
   annotations:
-    cert-manager.io/cluster-issuer: {{ $.Values.issuer.name }}
-    kubernetes.io/ingress.class: "nginx"
-    default-ssl-certificate: {{ $.Values.issuer.name }}
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    default-ssl-certificate: letsencrypt-prod
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     #service.beta.kubernetes.io/do-loadbalancer-hostname: "lineblocs-test.com"
-    ingress.kubernetes.io/proxy-body-size: "128m"
-    nginx.org/proxy-connect-timeout: "30s"
+    {{- if .Values.nginx.enabled }}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.org/proxy-connect-timeout: {{ include "common.utils.getValueFromKey" (dict "key" "nginx.controller.proxySetHeaders.proxy-connect-timeout" "context" $) }}
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
-    {{- range $key, $value := .Values.ingress.custom_annotations }}
-    {{ $key  }}: {{ $value |   quote }}
+    ingress.kubernetes.io/proxy-body-size: "128m"
+    {{- else }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.ingressClassName | quote }}
+    {{- end }}
+    {{- if .Values.ingress.customAnnotations }}
+    {{- toYaml .Values.ingress.customAnnotations | indent 4 }}
     {{- end }}
 spec:
+  {{- if default false .Values.ingress.tls.enabled }}
   tls:
     - hosts:
-        - {{ .Values.deployment_domain }}
-      secretName: {{ .Release.Name }}-cert
-  rules:
-    - host: {{ .Values.deployment_domain }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ $fullName }}-web
-                port:
-                  number: {{ $svcPort }}
+        {{- range (include "lineblocs.ingress.hosts" . | splitList ", ") }}
+        - {{ quote . }}
+        {{- end }}
+      secretName: hello-kubernetes-tls
   {{- end }}
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: ingress
-# spec:
-#   tls:
-#   - hosts:
-#     - lineblocs-test.com
-#     - app.lineblocs-test.com
-#     - editor.lineblocs-test.com
-#     - phpmyadmin.lineblocs-test.com
-#     - internals.lineblocs-test.com
-#     - prv.lineblocs-test.com
-#     - emailer.lineblocs-test.com
-#     - tsc.lineblocs-test.com
-#     secretName: hello-kubernetes-tls
-#   rules:
-#   - host: lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-com
-#           servicePort: 80
-#   - host: app.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-app
-#           servicePort: 80
-#   - host: editor.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-editor
-#           servicePort: 80
-#   - host: phpmyadmin.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: phpmyadmin-service
-#           servicePort: 80
-#   - host: internals.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-internals
-#           servicePort: 80
-#   - host: prv.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-prv
-#           servicePort: 80
-#   - host: emailer.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-emailer
-#           servicePort: 80
-#   - host: tsc.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-tsc-compiler
-#           servicePort: 80
-#   - host: s3fs.lineblocs-test.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: lineblocs-s3fs
-#           servicePort: 80
-#   - host: matomo.lbackups.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: matomo
-#           servicePort: 80
-#   - host: infinitet3ch.com
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: infinitetech-v5
-#           servicePort: 80
-#   - host: infinitete.ch
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: infinitetech-v5
-#           servicePort: 80
-#   - host: saasexpress.ca
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: saasexp
-#           servicePort: 80
+  rules: {{- include "lineblocs.ingress.rules" . | nindent 4 }}

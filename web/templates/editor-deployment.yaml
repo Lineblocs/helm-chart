@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "resource.metadata" (dict "name" "editor" "context" .) }}
+
+spec:
+  replicas: {{ .Values.editor.replicas }}
+  selector:
+    matchLabels:
+      {{- include "resource.matchLabels" (dict "name" "editor" "context" .) | indent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "resource.matchLabels" (dict "name" "editor" "context" .) | indent 8 }}
+
+    spec:
+      containers:
+        - name: {{ include "resource.name" (dict "name" "editor" "context" .) }}
+          {{- $repository := default "lineblocs/flow-designer" .Values.editor.image.repository }}
+          {{- $tag := default "master" .Values.editor.image.tag }}
+          image: {{ printf "%s:%s" $repository $tag }}
+          ports:
+            - containerPort: 80
+          env:
+            - name: DEPLOYMENT_DOMAIN
+              value: {{ .Values.deploymentDomain }}
+              {{- if .Values.editor.extraEnv }}
+                {{- toYaml .Values.editor.extraEnv | nindent 12 }}
+              {{- end }}
