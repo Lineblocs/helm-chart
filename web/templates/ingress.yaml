@@ -3,58 +3,31 @@ kind: Ingress
 metadata:
   {{- include "resource.metadata" (dict "name" "" "context" .) }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
     default-ssl-certificate: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     #service.beta.kubernetes.io/do-loadbalancer-hostname: "lineblocs-test.com"
-    ingress.kubernetes.io/proxy-body-size: "128m"
-    nginx.org/proxy-connect-timeout: "30s"
+    {{- if .Values.nginx.enabled }}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.org/proxy-connect-timeout: {{ include "common.utils.getValueFromKey" (dict "key" "nginx.controller.proxySetHeaders.proxy-connect-timeout" "context" $) }}
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    ingress.kubernetes.io/proxy-body-size: "128m"
+    {{- else }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.ingressClassName | quote }}
+    {{- end }}
+    {{- if .Values.ingress.customAnnotations }}
+    {{- toYaml .Values.ingress.customAnnotations | indent 4 }}
+    {{- end }}
 spec:
+  {{- if default false .Values.ingress.tls.enabled }}
   tls:
     - hosts:
-        {{- range (include "lineblocs.ingress.hosts" . | splitList ",") }}
-        - {{ . }}
+        {{- range (include "lineblocs.ingress.hosts" . | splitList ", ") }}
+        - {{ quote . }}
         {{- end }}
       secretName: hello-kubernetes-tls
-  rules:
-    - host: lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: lineblocs-com
-              servicePort: 80
-    - host: app.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: lineblocs-app
-              servicePort: 80
-    - host: editor.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: lineblocs-editor
-              servicePort: 80
-    - host: phpmyadmin.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: phpmyadmin-service
-              servicePort: 80
-    - host: internals.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: lineblocs-internals
-              servicePort: 80
-    - host: tsc.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              serviceName: lineblocs-tsc-compiler
-              servicePort: 80
+  {{- end }}
+  rules: {{- include "lineblocs.ingress.rules" . | nindent 4 }}

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  {{- include "resource.metadata" (dict "name" "phpmyadmin" "context" $) }}
+
+spec:
+  type: "ClusterIP"
+  selector: {{- include "resource.matchLabels" (dict "name" "phpmyadmin" "context" $) | nindent 6 }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

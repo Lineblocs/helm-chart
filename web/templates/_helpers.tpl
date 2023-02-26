@@ -26,10 +26,6 @@ Create chart name and version as used by the chart label.
     {{- printf "%s-%s" (include "lineblocs.name" .) .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- define "toBool" -}}
-    {{- not (eq . "") -}}
-{{- end -}}
-
 {{/*Get the resource name appended with the resource name
 Usage:
 include "resource.name" (dict "name" "$name" "context" .)*/}}
@@ -37,7 +33,7 @@ include "resource.name" (dict "name" "$name" "context" .)*/}}
     {{- if eq .name "" }}
         {{- include "lineblocs.fullname" .context }}
     {{- else }}
-{{/*    Lower required here for ingress backends later on*/}}
+{{- /*    Lower required here for ingress backends later on*/}}
         {{- printf "%s-%s" (include "lineblocs.fullname" .context) (lower .name) }}
     {{- end }}
 {{- end }}
@@ -184,7 +180,7 @@ Create the name of the service account to use
   env:
     {{- include "lineblocs.mysql.env" . | indent 4 }}
     - name: MAX_RETRY_COUNT
-      value: {{ default "10" (include "common.utils.getValueFromKey" (dict "key" (join "." (list $key "maxRetryCount")) "context" .) | quote) }}
+      value: {{ include "common.utils.getValueFromKey" (dict "key" (join "." (list $key "maxRetryCount")) "context" .) | default 10 | quote }}
     {{- end }}
 {{- end }}
 
@@ -196,5 +192,18 @@ Create the name of the service account to use
             {{- $hosts = append $hosts $value.domain }}
         {{- end }}
     {{- end }}
-    {{- join "," $hosts }}
+    {{- uniq $hosts | join ", " }}
+{{- end }}
+
+{{- define "lineblocs.ingress.rules" }}
+    {{- range $key, $value := .Values }}
+        {{- if and (typeIsLike "map[string]interface {}" $value) (hasKey $value "domain") }}
+- host: {{ $value.domain | quote }}
+  http:
+    paths:
+      - backend:
+          serviceName: {{ include "resource.name" (dict "name" $key "context" $) | quote }}
+          servicePort: 80
+        {{- end }}
+    {{- end }}
 {{- end }}
