@@ -48,19 +48,19 @@ spec:
               memory: "256Mi"
           env:
             - name: ARI_HOST
-              value: asterisk
+              value: {{ .Values.voip.ariHost }}
             - name: ARI_PORT
-              value: "8088"
+              value: {{ .Values.voip.ariPort | quote }}
             - name: ARI_USERNAME
-              value: ariuser
+              value: {{ .Values.voip.ariUser }}
             - name: ARI_PASSWORD
-              value: GENERATED_ARI_PASSWORD
+              value: {{ .Values.voip.ariPassword }}
             - name: ARI_USE_PROXY
-              value: "false"
+              value: {{ .Values.voip.ariUseProxy | toString | quote }}
             - name: NATSGW_URL
-              value: nats://natshost:4222
+              value: nats://{{ .Release.Name }}-nats:4222
             - name: DEPLOYMENT_DOMAIN
-              value: CONFIGURED_DEPLOYMENT_DOMAIN
+              value: {{ .Values.deploymentDomain }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/app/service.json"
             - name: LOG_LEVEL
@@ -78,21 +78,25 @@ spec:
               memory: "256Mi"
           env:
             - name: DB_HOST
-              value: 104.248.107.119
+              value: {{ include "lineblocs.mysql.host" . }}
             - name: DB_USER
               value: root
             - name: DB_PASS
-              value: "4ChTXGuEUtrj6b4H"
+              valueFrom:
+                secretKeyRef:
+                  key: mysql-root-password
+                  name: {{ ternary (printf "%s-mysql" .Release.Name) (include "lineblocs.fullname" $) .Values.mysql.enabled }}
+                  optional: false
             - name: DB_NAME
-              value: lineblocs
+              value: {{ include "lineblocs.mysql.database" . }}
             - name: AMI_HOST
-              value: 127.0.0.1
+              value: {{ .Values.voip.amiHost }}
             - name: AMI_PORT
-              value: "5038"
+              value: {{ .Values.voip.amiPort | quote }}
             - name: AMI_USER
-              value: ami
+              value: {{ .Values.voip.amiUser }}
             - name: AMI_PASS
-              value: lineblocs-xxx
+              value: {{ .Values.voip.amiPassword }}
             - name: NATSGW_URL
               value: nats://{{ .Release.Name }}-nats:4222
             - name: LOG_LEVEL

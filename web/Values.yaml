@@ -103,3 +103,14 @@ mysql:
 
 phpmyadmin:
   domain: phpmyadmin.github.com
+
+voip:
+  amiHost:
+  amiUser:
+  amiPort:
+  amiPassword:
+  ariUser:
+  ariHost:
+  ariPassword:
+  ariPort:
+  ariUseProxy:
