@@ -1,18 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: asterisk
-  labels:
-    component: asterisk
+  {{ include "resource.metadata" (dict "name" "asterisk" "context" .) }}
 spec:
   replicas: 3
   selector:
     matchLabels:
-      component: asterisk
+      {{- include "resource.matchLabels" (dict "name" "asterisk" "context" .) | indent 6 }}
   template:
     metadata:
       labels:
-        component: asterisk
+        {{- include "resource.matchLabels" (dict "name" "asterisk" "context" .) | indent 8 }}
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
@@ -39,15 +37,6 @@ spec:
           env:
             - name: ARI_PASSWORD
               value: GENERATED_ARI_PASSWORD
-        #- name: natsgw
-        #  image: lineblocs/natsgw:latest
-        #  env:
-        #    - name: ARI_APPLICATION
-        #      value: lineblocs
-        #    - name: ARI_USERNAME
-        #      value: ariuser
-        #    - name: ARI_PASSWORD
-        #      value: ed3fd1f1bf85e0251fc4403010a14625
         - name: apps
           image: lineblocs/ari-apps:master
           resources:
@@ -77,7 +66,7 @@ spec:
             - name: LOG_LEVEL
               value: INFO
             - name: LINEBLOCS_KEY
-              value: CONFIGURED_LINEBLOCS_KEY
+              value: {{ .Values.lineblocsKey | quote }}
         - name: monitor
           image: lineblocs/media-monitor:master
           resources:
@@ -105,11 +94,11 @@ spec:
             - name: AMI_PASS
               value: lineblocs-xxx
             - name: NATSGW_URL
-              value: nats://natshost:4222
+              value: nats://{{ .Release.Name }}-nats:4222
             - name: LOG_LEVEL
               value: INFO
             - name: LINEBLOCS_KEY
-              value: xxx
+              value: {{ .Values.lineblocsKey | quote }}
             - name: LINEBLOCS_REGION
               value: ca-central-1
       #nodeSelector:

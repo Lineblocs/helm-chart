@@ -21,7 +21,7 @@ spec:
           {{- $tag := default "master" .Values.editor.image.tag }}
           image: {{ printf "%s:%s" $repository $tag }}
           ports:
-            - containerPort: 80
+            - containerPort: 3000
           env:
             - name: DEPLOYMENT_DOMAIN
               value: {{ .Values.deploymentDomain }}

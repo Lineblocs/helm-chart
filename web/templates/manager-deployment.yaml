@@ -1,21 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mngrs
-  labels:
-    component: mngrs
+  {{ include "resource.metadata" (dict "name" "managers" "context" .) }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: mngrs
+      {{- include "resource.matchLabels" (dict "name" "managers" "context" .) | indent 6 }}
   template:
     metadata:
       labels:
-        component: mngrs
+        {{- include "resource.matchLabels" (dict "name" "managers" "context" .) | indent 8 }}
     spec:
       containers:
-        - name: recordings-mngr
+        - name: {{ include "resource.name" (dict "name" "recording-manager" "context" .) }}
           image: lineblocs/recordings-mngr:master
           env:
             - name: DB_HOST
@@ -38,7 +36,7 @@ spec:
               value: CONFIGURED_DEPLOYMENT_DOMAIN
             - name: LOG_LEVEL
               value: INFO
-        - name: billing-mngr
+        - name: {{ include "resource.name" (dict "name" "billing-manager" "context" .) }}
           image: lineblocs/billing-mngr:master
           env:
             - name: DB_HOST
@@ -49,4 +47,3 @@ spec:
               value: CONFIGURED_DB_PASS
             - name: DB_NAME
               value: CONFIGURED_DB_NAME     
-

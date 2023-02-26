@@ -164,7 +164,7 @@ Create the name of the service account to use
     {{- $name := .key | splitList "." | last | lower }}
     {{- $key := .key }}
     {{- with .context }}
-- name: {{ include "resource.name" (dict "name" $name "context" .) }}
+- name: {{ include "resource.name" (dict "name" (printf "%s-init" $name) "context" .) }}
   image: {{ include "lineblocs.mysql.image" . }}
   command:
     - bash
@@ -202,8 +202,12 @@ Create the name of the service account to use
   http:
     paths:
       - backend:
-          serviceName: {{ include "resource.name" (dict "name" $key "context" $) | quote }}
-          servicePort: 80
+          service:
+            name: {{ include "resource.name" (dict "name" $key "context" $) | quote }}
+            port:
+              number: 80
+        pathType: ImplementationSpecific
+        path: /
         {{- end }}
     {{- end }}
 {{- end }}

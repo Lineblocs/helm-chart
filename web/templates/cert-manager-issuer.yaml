@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  {{- include "resource.metadata" (dict "name" "" "context" $) }}
+
+spec:
+  acme:
+    # Email address used for ACME registration
+    email: {{ required "email for acme is required" .Values.letsencryptEmail }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Name of a secret used to store the ACME account private key
+      name: {{ include "resource.name" (dict "name" "private-key" "context" $) }}
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+      - http01:
+          ingress:
+            class: {{ .Values.ingress.ingressClassName }}
