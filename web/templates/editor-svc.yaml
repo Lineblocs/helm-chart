@@ -7,6 +7,6 @@ spec:
   type: {{ default "ClusterIP" .Values.editor.service.type }}
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 3000
   selector:
     {{- include "resource.matchLabels" (dict "name" "editor" "context" .) | indent 4 }}

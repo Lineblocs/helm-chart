@@ -1,31 +1,24 @@
-deploymentDomain: demo.com
+deploymentDomain:
 
-letsencryptEmail:
+letsencryptEmail: test@lineblocs.com
 
 letsencryptServer:
 
 opensipsDatabase: opensips
 
+lineblocsKey:
+
 ingress:
-  enabled:
-  ingressClassName:
+  enabled: true
+  ingressClassName: nginx
   customAnnotations: {}
   tls:
+    enabled: true
     existingSecret:
-
-nginx:
-  enabled: true
-  controller:
-    publishService:
-      enabled: true
-    proxySetHeaders:
-      proxy-connect-timeout: "30s"
-      proxy-read-timeout: "20s"
-      client-max-body-size: "128m"
-      proxy-body-size: "128m"
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/01-app.yml
 app:
+  domain: app.
   replicas: 1
   image: {}
   service: {}
@@ -35,24 +28,27 @@ editor:
   replicas: 1
   image: {}
   service: {}
-  domain: editor.github.com
+  domain: editor.
 
 tsBinding:
   replicas: 1
   image: {}
   service: {}
+  domain: tsbinding.
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/05-routeeditor.yml
 routeEditor:
   replicas: 1
   image: {}
   service: {}
+  domain: route.
 
 # https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
 com:
   service: {}
   replicas: 1
   image: {}
+  domain: com.
   resources:
     requests: {}
     limit: {}
@@ -67,7 +63,7 @@ internalApi:
     type: ""
   useLimitMiddleware: off
   useTls: off
-  domain: internal.github.com
+  domain: internal.
 
 certmanager:
   enabled: false
@@ -107,3 +103,14 @@ mysql:
 
 phpmyadmin:
   domain: phpmyadmin.github.com
+
+voip:
+  amiHost:
+  amiUser:
+  amiPort:
+  amiPassword:
+  ariUser:
+  ariHost:
+  ariPassword:
+  ariPort:
+  ariUseProxy:

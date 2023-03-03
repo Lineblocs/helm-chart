@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{ include "resource.metadata" (dict "name" "rtpproxy" "context" .) }}
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      {{- include "resource.matchLabels" (dict "name" "rtpproxy" "context" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "resource.matchLabels" (dict "name" "rtpproxy" "context" .) | indent 8 }}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: component
+                operator: In
+                values:
+                - rtpproxy
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: rtpproxy
+          image: lineblocs/rtpproxy:master
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "2048Mi"
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: experimental
+        effect: NoSchedule

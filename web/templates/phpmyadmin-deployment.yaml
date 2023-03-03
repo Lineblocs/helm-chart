@@ -10,7 +10,7 @@ spec:
 
   template:
     metadata:
-      labels: {{- include "resource.matchLabels" (dict "name" "phpmyadmin" "context" $) | nindent 6 }}
+      labels: {{- include "resource.matchLabels" (dict "name" "phpmyadmin" "context" $) | nindent 8 }}
 
     spec:
       containers:

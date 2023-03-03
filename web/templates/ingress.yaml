@@ -1,33 +1,22 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   {{- include "resource.metadata" (dict "name" "" "context" .) }}
+    {{- if or .Values.ingress.customAnnotations .Values.ingress.tls.enabled }}
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    default-ssl-certificate: letsencrypt-prod
-    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    #service.beta.kubernetes.io/do-loadbalancer-hostname: "lineblocs-test.com"
-    {{- if .Values.nginx.enabled }}
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.org/proxy-connect-timeout: {{ include "common.utils.getValueFromKey" (dict "key" "nginx.controller.proxySetHeaders.proxy-connect-timeout" "context" $) }}
-    nginx.org/proxy-read-timeout: "20s"
-    nginx.org/client-max-body-size: "128m"
-    nginx.ingress.kubernetes.io/proxy-body-size: "128m"
-    ingress.kubernetes.io/proxy-body-size: "128m"
-    {{- else }}
-    kubernetes.io/ingress.class: {{ .Values.ingress.ingressClassName | quote }}
-    {{- end }}
+    cert-manager.io/cluster-issuer: {{ include "resource.name" (dict "name" "" "context" $) }}
+    default-ssl-certificate: {{ include "resource.name" (dict "name" "" "context" $) }}
     {{- if .Values.ingress.customAnnotations }}
     {{- toYaml .Values.ingress.customAnnotations | indent 4 }}
     {{- end }}
+    {{- end }}
 spec:
+  ingressClassName: "nginx"
   {{- if default false .Values.ingress.tls.enabled }}
   tls:
     - hosts:
         {{- range (include "lineblocs.ingress.hosts" . | splitList ", ") }}
         - {{ quote . }}
         {{- end }}
-      secretName: hello-kubernetes-tls
   {{- end }}
   rules: {{- include "lineblocs.ingress.rules" . | nindent 4 }}
