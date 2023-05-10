@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: {{ include "resource.name" (dict "name" "tsBinding" "context" .) }}
-          {{ $repository := default "lineblocs/ts-bindings" .Values.tsBinding.image.repository }}
-          {{ $tag := default "master" .Values.tsBinding.image.tag }}
+          {{- $repository := default "lineblocs/ts-bindings" .Values.tsBinding.image.repository }}
+          {{- $tag := default "master" .Values.tsBinding.image.tag }}
           image: {{ printf "%s:%s" $repository $tag }}
           ports:
             - containerPort: 8080

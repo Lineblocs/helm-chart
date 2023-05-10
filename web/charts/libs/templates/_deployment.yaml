@@ -1,0 +1,79 @@
+{{- define "libs.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "libs.fullname" . }}
+  labels:
+    {{- include "libs.labels" . | nindent 4 }}
+  annotations:
+    checksum/config: {{ include "libs.configmap" . | sha256sum }}
+spec:
+  replicas: {{ default 1 .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "libs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "libs.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if eq true .Values.initContainerWaitDB }}
+      initContainers: {{- include "lineblocs.databaseWaitInitContainers" (dict "key" .Chart.Name "context" .) | nindent 8 -}}
+      {{- end }}
+      containers:
+      {{- range .Values.containers }}
+        - name: {{ .name }}
+          {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .image }}"
+          {{- with .imagePullPolicy}}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          envFrom:
+          {{- with .envs }}
+          {{- range $value := .secrets }}
+            - secretRef:
+                name: {{ $value }}
+          {{- end }}
+          {{- range $value := .configmaps }}
+            - configMapRef:
+                name: {{ $value.name }}
+          {{- end }}
+          {{- end }}
+          {{- if and ($.Values.envs) ($.Values.envs.configs) }}
+            - configMapRef:
+                {{- /* using $ instead of a dot because we are in a range loop and . is redefined */}}
+                name: {{ include "libs.fullname" $ }}-config
+          {{- end }}
+          ports:
+          {{ .ports | toYaml | indent 10 | trim }}
+          {{- with .livenessProbe }}
+          livenessProbe:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+---
+
+{{- end }}

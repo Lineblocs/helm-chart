@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: {{ include "resource.name" (dict "name" "routeEditor" "context" $) }}
-          {{ $repository := default "lineblocs/call-route-editor" .Values.routeEditor.image.repository }}
-          {{ $tag := default "master" .Values.routeEditor.image.tag }}
+          {{- $repository := default "lineblocs/call-route-editor" .Values.routeEditor.image.repository }}
+          {{- $tag := default "master" .Values.routeEditor.image.tag }}
           image: {{ printf "%s:%s" $repository $tag }}
           ports:
             - containerPort: 8005

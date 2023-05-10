@@ -37,8 +37,8 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 3
           name: {{ include "resource.name" (dict "name" "internalApi" "context" .) }}
-          {{ $repository := default "lineblocs/internals-api" .Values.internalApi.image.repository }}
-          {{ $tag := default "master" .Values.internalApi.image.tag }}
+          {{- $repository := default "lineblocs/internals-api" .Values.internalApi.image.repository }}
+          {{- $tag := default "master" .Values.internalApi.image.tag }}
           image: {{ printf "%s:%s" $repository $tag }}
           imagePullPolicy: {{ default "IfNotPresent" .Values.internalApi.image.pullPolicy }}
           ports:
