@@ -1,0 +1,13 @@
+Lineblocs web charts need a database secret !
+
+Please provide a db-secret with the following format:
+apiVersion: v1
+metadata:
+  name: db-secret
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  DB_HOST: <host>
+  DB_SCHEMA: <schema>
+  DB_USER: <username>
+  DB_PASS: <password>

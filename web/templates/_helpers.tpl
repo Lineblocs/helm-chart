@@ -6,61 +6,6 @@
     {{- end }}
 {{- end }}
 
-{{- define "lineblocs.mysql.host" }}
-    {{- if not .Values.global.mysql.enabled }}
-        {{- required "external mysql host name is required" .Values.externalMysqlHost }}
-    {{- else }}
-        {{- printf "%s-mysql-headless.%s.svc.cluster.local" .Release.Name .Release.Namespace }}
-    {{- end }}
-{{- end }}
-
-{{- define "lineblocs.mysql.user" }}
-    {{- if not .Values.global.mysql.enabled }}
-        {{- required "external mysql username required" .Values.externalMysqlUser }}
-    {{- else }}
-        {{- .Values.global.mysql.auth.password }}
-    {{- end }}
-{{- end }}
-
-{{- define "lineblocs.mysql.database" }}
-    {{- if not .Values.global.mysql.enabled }}
-        {{- required "external mysql database name required" .Values.externalMysqlDatabase }}
-    {{- else }}
-        {{- .Values.global.mysql.auth.database }}
-    {{- end }}
-{{- end }}
-
-{{- define "lineblocs.mysql.env" }}
-- name: DB_HOST
-  value: {{ include "lineblocs.mysql.host" . | quote }}
-- name: DB_USER
-  value: {{ include "lineblocs.mysql.user" $ }}
-- name: DB_PASS
-  valueFrom:
-    secretKeyRef:
-      name: {{ ternary (printf "%s-mysql" .Release.Name) (include "lineblocs.fullname" $) .Values.global.mysql.enabled }}
-      key: mysql-password
-      optional: false
-- name: DB_NAME
-  value: {{ include "lineblocs.mysql.database" $ }}
-{{- end }}
-
-{{- define "lineblocs.mysql.env.withRoot" }}
-    {{- include "lineblocs.mysql.env" . }}
-- name: DB_ROOT_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ ternary (printf "%s-mysql" .Release.Name) (include "lineblocs.fullname" $) .Values.global.mysql.enabled }}
-      key: mysql-root-password
-      optional: false
-{{- end }}
-
-{{- define "lineblocs.mysql.env.all" }}
-    {{- include "lineblocs.mysql.env.withRoot" . }}
-- name: DB_OPENSIPS_DATABASE
-  value: {{ required "opensipsDatabase is a required parameter" .Values.opensipsDatabase }}
-{{- end }}
-
 {{- define "lineblocs.deploymentDomain" }}
     {{- required "deploymentDomain is a required parameter" .Values.deploymentDomain | quote }}
 {{- end }}
@@ -88,9 +33,11 @@
     - configMapRef:
         {{- /* using $ instead of a dot because we are in a range loop and . is redefined */}}
         name: {{ include "libs.fullname" . }}-config
+    - secretRef:
+        name: db-secret
   env:
     - name: MAX_RETRY_COUNT
-      value: "10"
+      value: {{ default "10" .Values.global.mysqlInitMaxRetry | quote }}
     {{- end }}
 {{- end }}
 
