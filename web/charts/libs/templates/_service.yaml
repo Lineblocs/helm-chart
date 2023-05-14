@@ -3,7 +3,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  {{ include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
+  {{- include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
+  {{- if .Values.service.annotations }}
+  annotations:
+    {{ .Values.service.annotations | toYaml | indent 4 | trim }}
+  {{- end }}
 spec:
   type: {{ default "ClusterIP" .Values.service.type }}
   ports:

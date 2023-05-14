@@ -120,4 +120,3 @@ app.kubernetes.io/name: {{ include "resource.name" (dict "name" .name "context" 
 app.kubernetes.io/instance: {{ quote .Release.Name }}
     {{- end }}
 {{- end }}
-
