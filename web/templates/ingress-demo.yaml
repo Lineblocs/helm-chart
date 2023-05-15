@@ -1,0 +1,162 @@
+{{- if and (.Values.ingress) (.Values.ingress.enableDemo) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: {{ default "nginx" .Values.ingress.ingressClassName }}
+    {{- with .Values.ingress.certs.issuerName -}}
+    cert-manager.io/cluster-issuer: {{ . }}
+    default-ssl-certificate: letsencrypt-prod
+    {{- end -}}
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    ingress.kubernetes.io/proxy-body-size: "128m"
+    nginx.org/proxy-connect-timeout: "30s"
+    nginx.org/proxy-read-timeout: "20s"
+    nginx.org/client-max-body-size: "128m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+spec:
+  tls:
+    - hosts:
+        - lineblocs-test.com
+        - app.lineblocs-test.com
+        - editor.lineblocs-test.com
+        - phpmyadmin.lineblocs-test.com
+        - internals.lineblocs-test.com
+        - prv.lineblocs-test.com
+        - emailer.lineblocs-test.com
+        - tsc.lineblocs-test.com
+      secretName: {{ .Values.ingress.certs.secretName }}
+  rules:
+    - host: lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-com
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: app.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-app
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: editor.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-editor
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: phpmyadmin.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: phpmyadmin-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: internals.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-internals
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: prv.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-prv
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: emailer.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-emailer
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: tsc.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-tsc-compiler
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: s3fs.lineblocs-test.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-s3fs
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: matomo.lbackups.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: matomo
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: infinitet3ch.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: infinitetech-v5
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: infinitete.ch
+      http:
+        paths:
+          - backend:
+              service:
+                name: infinitetech-v5
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: saasexpress.ca
+      http:
+        paths:
+          - backend:
+              service:
+                name: saasexp
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  {{- end -}}

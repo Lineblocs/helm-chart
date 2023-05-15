@@ -1,6 +1,12 @@
 global:
   externalMysqlVersion: "5.7"
 
+ingress:
+  enableDemo: false
+  certs:
+    issuerName: myac
+    secretName: lineblocs-ingress-tls
+
 app:
   containers:
     - name: app
