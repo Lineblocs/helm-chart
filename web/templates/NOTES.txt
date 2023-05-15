@@ -11,3 +11,8 @@ data:
   DB_SCHEMA: <schema>
   DB_USER: <username>
   DB_PASS: <password>
+
+Also, be sure that a metrics-server is present on the destination cluster. You can check if it is installed with the
+following command:
+
+kubectl get deploy,svc -n kube-system | grep metrics-server
