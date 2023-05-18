@@ -1,4 +1,5 @@
 {{- define "libs.deployment" -}}
+{{- if or (not .Values.controllerType) (eq .Values.controllerType "deployment" ) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,6 +34,7 @@ spec:
           {{- end }}
           envFrom:
           {{- with .envs }}
+          # Container specific secret
           {{- range $value := .secrets }}
             - secretRef:
                 name: {{ $value }}
@@ -47,6 +49,11 @@ spec:
                 {{- /* using $ instead of a dot because we are in a range loop and . is redefined */}}
                 name: {{ include "libs.fullname" $ }}-config
           {{- end }}
+          # Deployment secret
+          {{- range $.Values.envs.secrets }}
+            - secretRef:
+                name: {{ . }}
+          {{- end }}
           ports:
           {{ .ports | toYaml | indent 10 | trim }}
           {{- with .livenessProbe }}
@@ -58,6 +65,7 @@ spec:
           {{- with .resources }}
           resources: {{ toYaml . | nindent 12 }}
           {{- end }}
+      {{- end }}
       {{- with .nodeSelector }}
       nodeSelector: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -67,7 +75,7 @@ spec:
       {{- with .tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
-    {{- end }}
 ---
 
+{{- end }}
 {{- end }}

@@ -1,6 +1,6 @@
 dependencies:
 - name: libs
-  repository: ""
+  repository: file://../libs
   version: 0.1.0
 - name: app
   repository: ""
@@ -17,5 +17,5 @@ dependencies:
 - name: editor
   repository: ""
   version: 0.1.0
-digest: sha256:49cbc367d53c324e2032570e18792df88436ee44e76cee8d063d2d214e6a01b0
-generated: "2023-05-10T14:44:02.932830276+02:00"
+digest: sha256:7a227efa03a6bcf651e02675f19b98f576c363d9cf068c30b4a077fe60764281
+generated: "2023-05-16T22:39:17.659796333+02:00"

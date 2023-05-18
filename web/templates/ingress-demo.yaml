@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: {{ default "nginx" .Values.ingress.ingressClassName }}
     {{- with .Values.ingress.certs.issuerName -}}
     cert-manager.io/cluster-issuer: {{ . }}
-    default-ssl-certificate: letsencrypt-prod
+    default-ssl-certificate: {{ . }}
     {{- end -}}
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
@@ -16,6 +16,7 @@ metadata:
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    {{ .Values.ingress.annotations | toYaml | indent 4 | trim }}
 spec:
   tls:
     - hosts:
@@ -25,11 +26,10 @@ spec:
         - phpmyadmin.lineblocs-test.com
         - internals.lineblocs-test.com
         - prv.lineblocs-test.com
-        - emailer.lineblocs-test.com
         - tsc.lineblocs-test.com
       secretName: {{ .Values.ingress.certs.secretName }}
   rules:
-    - host: lineblocs-test.com
+    - host: {{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -89,72 +89,12 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: emailer.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              service:
-                name: lineblocs-emailer
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
     - host: tsc.lineblocs-test.com
       http:
         paths:
           - backend:
               service:
                 name: lineblocs-tsc-compiler
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-    - host: s3fs.lineblocs-test.com
-      http:
-        paths:
-          - backend:
-              service:
-                name: lineblocs-s3fs
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-    - host: matomo.lbackups.com
-      http:
-        paths:
-          - backend:
-              service:
-                name: matomo
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-    - host: infinitet3ch.com
-      http:
-        paths:
-          - backend:
-              service:
-                name: infinitetech-v5
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-    - host: infinitete.ch
-      http:
-        paths:
-          - backend:
-              service:
-                name: infinitetech-v5
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-    - host: saasexpress.ca
-      http:
-        paths:
-          - backend:
-              service:
-                name: saasexp
                 port:
                   number: 80
             path: /

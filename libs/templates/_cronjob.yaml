@@ -1,0 +1,69 @@
+{{- define "libs.cronjob" -}}
+{{- if eq .Values.controllerType "cronjob" }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  {{- include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
+spec:
+  schedule: {{ .schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          {{- range .Values.containers }}
+            - name: {{ .name }}
+              {{- with .securityContext }}
+              securityContext:
+                {{- toYaml . | nindent 12 }}
+              {{- end }}
+              image: "{{ .image }}"
+              {{- with .imagePullPolicy }}
+              imagePullPolicy: {{ . }}
+              {{- end }}
+              {{- with .args }}
+              args: {{ toYaml . | nindent 16 | trim }}
+              {{- end }}
+              envFrom:
+              {{- with .envs }}
+                # Container specific secret
+              {{- range $value := .secrets }}
+                - secretRef:
+                    name: {{ $value }}
+              {{- end }}
+              {{- range $value := .configmaps }}
+                - configMapRef:
+                    name: {{ $value.name }}
+              {{- end }}
+              {{- end }}
+              {{- if and ($.Values.envs) ($.Values.envs.configs) }}
+                - configMapRef:
+                    {{- /* using $ instead of a dot because we are in a range loop and . is redefined */}}
+                    name: {{ include "libs.fullname" $ }}-config
+              {{- end }}
+                # Deployment secret
+              {{- range $.Values.envs.secrets }}
+                - secretRef:
+                    name: {{ . }}
+              {{- end }}
+              {{- with .ports }}
+              ports: {{ toYaml . | nindent 16 | trim }}
+              {{- end }}
+              {{- with .livenessProbe }}
+              livenessProbe: {{ toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .readinessProbe }}
+              readinessProbe: {{ toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .resources }}
+              resources: {{ toYaml . | nindent 16 }}
+              {{- end }}
+          {{- end }}
+          {{- with .restartPolicy }}
+          restartPolicy: {{ . }}
+          {{- end }}
+          {{- with .imagePullSecrets }}
+          imagePullSecrets: {{ toYaml . | nindent 12 | trim }}
+          {{- end }}
+{{- end }}
+{{- end -}}

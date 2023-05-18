@@ -3,6 +3,7 @@ global:
 
 ingress:
   enableDemo: false
+  deploymentDomain: lineblocs-test.com
   certs:
     issuerName: myac
     secretName: lineblocs-ingress-tls
@@ -45,12 +46,11 @@ com:
         limits:
           cpu: "4096m"
           memory: "16384Mi"
-      envs:
-        secrets:
-          - db-secret
   domain: com.
   initContainerWaitDB: true
   envs:
+    secrets:
+      - db-secret
     configs:
       DEPLOYMENT_DOMAIN: lineblocs-test.com
       DB_OPENSIPS_DATABASE: CONFIGURED_OPENSIPS_DATABASE
@@ -100,13 +100,12 @@ internals:
           httpHeaders:
             - name: X-Health
               value: health
-        initialDelaySeconds: 3
-        periodSeconds: 3
-      envs:
-        secrets:
-          - db-secret
-          - etcd-secret
+        initialDelaySeconds: 20
+        periodSeconds: 5
   envs:
+    secrets:
+      - db-secret
+      - etcd-secret
     configs:
       DB_NAME: lineblocs
       DB_HOST: mysql
@@ -120,11 +119,10 @@ phpmyadmin:
       image: phpmyadmin/phpmyadmin
       ports:
         - containerPort: 8015
-      envs:
-        secret:
-          - phpmyadmin-secret
-          - db-secret
   envs:
+    secret:
+      - phpmyadmin-secret
+      - db-secret
     configs:
       PMA_PORT: 3306
       PMA_HOST: lineblocs.ckehyurhpc6m.ca-central-1.rds.amazonaws.com

@@ -3,7 +3,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   {{- include "resource.metadata" (dict "name" "" "context" $) }}
-
 data:
   init_db.sql: |
     /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -194,7 +193,12 @@ data:
     --
 
     DROP TABLE IF EXISTS `byo_did_numbers`;
-    /*!40101 SET @saved_cs_client     = @@character_set_client */;
+    /*!4ULT NULL,
+    `did_action` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'accept-call',
+    PRIMARY KEY (`id`),
+    KEY `byo_did_numbers_user_id_foreign` (`user_id`),
+    KEY `byo_did_numbers_workspace_id_foreign` (`workspace_id`),
+    KEY `byo_did_numbers_flow_id_foreig0101 SET @saved_cs_client     = @@character_set_client */;
     /*!50503 SET character_set_client = utf8mb4 */;
     CREATE TABLE `byo_did_numbers` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -204,12 +208,7 @@ data:
     `number` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
     `user_id` int unsigned DEFAULT NULL,
     `workspace_id` int unsigned NOT NULL,
-    `flow_id` int unsigned DEFAULT NULL,
-    `did_action` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'accept-call',
-    PRIMARY KEY (`id`),
-    KEY `byo_did_numbers_user_id_foreign` (`user_id`),
-    KEY `byo_did_numbers_workspace_id_foreign` (`workspace_id`),
-    KEY `byo_did_numbers_flow_id_foreign` (`flow_id`),
+    `flow_id` int unsigned DEFAn` (`flow_id`),
     CONSTRAINT `byo_did_numbers_flow_id_foreign` FOREIGN KEY (`flow_id`) REFERENCES `flows` (`id`) ON DELETE CASCADE,
     CONSTRAINT `byo_did_numbers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
     CONSTRAINT `byo_did_numbers_workspace_id_foreign` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
