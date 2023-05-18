@@ -47,7 +47,6 @@ com:
           cpu: "4096m"
           memory: "16384Mi"
   domain: com.
-  initContainerWaitDB: true
   envs:
     secrets:
       - db-secret

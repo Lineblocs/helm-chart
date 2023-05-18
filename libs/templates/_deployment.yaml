@@ -18,9 +18,6 @@ spec:
       labels:
         {{- include "libs.selectorLabels" . | nindent 8 }}
     spec:
-      {{- if eq true .Values.initContainerWaitDB }}
-      initContainers: {{- include "lineblocs.databaseWaitInitContainers" (dict "key" .Chart.Name "context" .) | nindent 8 -}}
-      {{- end }}
       containers:
       {{- range .Values.containers }}
         - name: {{ .name }}
