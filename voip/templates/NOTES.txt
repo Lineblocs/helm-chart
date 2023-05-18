@@ -1,1 +1,20 @@
-to view the status of your deployment, run: kubectl get svc -w
+Lineblocs voip charts need a database secret !
+
+Please provide a db-secret with the following format:
+apiVersion: v1
+metadata:
+  name: db-secret
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  DB_HOST: <host>
+  DB_SCHEMA: <schema>
+  DB_USER: <username>
+  DB_PASS: <password>
+
+But do not forget every other secret you referenced in the chart.
+
+Also, be sure that a metrics-server is present on the destination cluster. You can check if it is installed with the
+following command:
+
+kubectl get deploy,svc -n kube-system | grep metrics-server
