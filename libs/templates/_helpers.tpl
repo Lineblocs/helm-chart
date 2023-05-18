@@ -1,8 +1,11 @@
 {{- define "libs.all" -}}
 {{ include "libs.configmap" . }}
+{{ include "libs.cronjob" . }}
+{{ include "libs.daemonset" . }}
 {{ include "libs.deployment" . }}
 {{ include "libs.hpa" . }}
 {{ include "libs.service" . }}
+{{ include "libs.rbac" . }}
 {{/*{{- include "ingress" . }}*/}}
 {{/*{{- include "serviceaccount" . }}*/}}
 {{- end -}}

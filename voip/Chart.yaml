@@ -23,3 +23,7 @@ dependencies:
     version: 0.1.0
   - name: libs
     version: 0.1.0
+  - name: cronjob-monthly
+    version: 0.1.0
+  - name: cronjob-half-hourly
+    version: 0.1.0

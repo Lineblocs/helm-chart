@@ -1,5 +1,5 @@
 {{- define "libs.deployment" -}}
-{{- if or (not .Values.controllerType) (eq .Values.controllerType "deployment" ) }}
+{{- if or (not .Values.controllerType) (eq .Values.controllerType "Deployment" ) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,12 +50,16 @@ spec:
                 name: {{ include "libs.fullname" $ }}-config
           {{- end }}
           # Deployment secret
+          {{- if and ($.Values.envs) ($.Values.envs.secrets) }}
           {{- range $.Values.envs.secrets }}
             - secretRef:
                 name: {{ . }}
           {{- end }}
+          {{- end }}
+          {{- with .ports }}
           ports:
-          {{ .ports | toYaml | indent 10 | trim }}
+          {{ . | toYaml | indent 10 | trim }}
+          {{- end }}
           {{- with .livenessProbe }}
           livenessProbe: {{ toYaml . | nindent 12 }}
           {{- end }}

@@ -1,11 +1,11 @@
 {{- define "libs.cronjob" -}}
-{{- if eq .Values.controllerType "cronjob" }}
+{{- if eq .Values.controllerType "CronJob" }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   {{- include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
 spec:
-  schedule: {{ .schedule }}
+  schedule: {{ default "* * 1 * *" .Values.schedule | quote }}
   jobTemplate:
     spec:
       template:
@@ -22,7 +22,8 @@ spec:
               imagePullPolicy: {{ . }}
               {{- end }}
               {{- with .args }}
-              args: {{ toYaml . | nindent 16 | trim }}
+              args:
+                {{ toYaml . | indent 16 | trim }}
               {{- end }}
               envFrom:
               {{- with .envs }}
@@ -59,11 +60,10 @@ spec:
               resources: {{ toYaml . | nindent 16 }}
               {{- end }}
           {{- end }}
-          {{- with .restartPolicy }}
-          restartPolicy: {{ . }}
-          {{- end }}
-          {{- with .imagePullSecrets }}
-          imagePullSecrets: {{ toYaml . | nindent 12 | trim }}
+          restartPolicy: {{ default "Never" .Values.restartPolicy }}
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{ toYaml . | indent 12 | trim }}
           {{- end }}
 {{- end }}
 {{- end -}}

@@ -106,6 +106,27 @@ k8sevents:
     configs:
       K8SEVENT_WEBHOOKS: http://127.0.0.1:8000/processEvent
 
+opensips:
+  controllerType: DaemonSet
+  containers:
+    - name: rtpproxy
+      image: lineblocs/rtpproxy:master
+    - name: opensips
+      image: lineblocs/opensips-proxy:master
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "1024Mi"
+        limits:
+          cpu: "300m"
+          memory: "2048Mi"
+  envs:
+    secrets:
+      - db-secret
+      - lineblocs-secret
+    configs:
+      RTPPROXY_IPV4: 127.0.0.1
+      DEPLOYMENT_DOMAIN: lineblocs.com
 
 grpc:
   containers:
@@ -143,6 +164,7 @@ grpc:
       LINEBLOCS_REGION: ca1
 
 cronjob-monthly:
+  controllerType: CronJob
   containers:
     - name: monthlybill
       image: lineblocs/crontabs:master
@@ -159,6 +181,7 @@ cronjob-monthly:
       - stripe-secret
 
 cronjob-half-hourly:
+  controllerType: CronJob
   containers:
     - name: monthlybill
       image: lineblocs/crontabs:master
@@ -169,9 +192,36 @@ cronjob-half-hourly:
   restartPolicy: OnFailure
   imagePullSecrets:
     - name: lineblocs-regcred
-  schedule: "0 0 1 * *"
+  schedule: "*/30 * * * *"
   envs:
     secrets:
       - aws-secret
       - mailgun-secret
       - stripe-secret
+
+rbac:
+  - rules:
+      - apiGroups: [ "" ]
+        resources: [ "pods","endpoints","services","nodes" ]
+        verbs: [ "get", "watch", "list" ]
+      - apiGroups: [ "apps" ]
+        resources: [ "deployments" ]
+        verbs: [ "get", "watch", "list", "update", "patch" ]
+    subjects:
+      - kind: User
+        name: system:serviceaccount:voip:default
+        apiGroup: rbac.authorization.k8s.io
+    roleName: voip-manager
+  - roleExists: true
+    subjects:
+      - kind: ServiceAccount
+        # Reference to upper's `metadata.name`
+        name: default
+        # Reference to upper's `metadata.namespace`
+        namespace: voip
+    roleName: cluster-admin
+    clusterWide: true
+
+nats:
+  exporter:
+    enabled: false

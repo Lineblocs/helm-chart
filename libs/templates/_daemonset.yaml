@@ -1,5 +1,5 @@
-{{- define "libs.deployment" -}}
-{{- if eq .Values.controllerType "daemonset" }}
+{{- define "libs.daemonset" -}}
+{{- if eq .Values.controllerType "DaemonSet" }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -33,7 +33,7 @@ spec:
           {{- end }}
           envFrom:
           {{- with .envs }}
-          # Container specific secret
+            # Container specific secret
           {{- range $value := .secrets }}
             - secretRef:
                 name: {{ $value }}
@@ -48,13 +48,15 @@ spec:
                 {{- /* using $ instead of a dot because we are in a range loop and . is redefined */}}
                 name: {{ include "libs.fullname" $ }}-config
           {{- end }}
-          # Deployment secret
+            # Deployment secret
           {{- range $.Values.envs.secrets }}
             - secretRef:
                 name: {{ . }}
           {{- end }}
+          {{- with .ports }}
           ports:
-          {{ .ports | toYaml | indent 10 | trim }}
+          {{ . | toYaml | indent 10 | trim }}
+          {{- end }}
           {{- with .livenessProbe }}
           livenessProbe: {{ toYaml . | nindent 12 }}
           {{- end }}
