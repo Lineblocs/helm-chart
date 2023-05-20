@@ -50,7 +50,7 @@ asterisk:
       DEPLOYMENT_DOMAIN: lineblocs-test.com
       GOOGLE_APPLICATION_CREDENTIALS: "/app/service.json"
       LOG_LEVEL: INFO
-      LINEBLOCS_REGION: ca-central-1
+      LINEBLOCS_REGION: ca1
       NATS_URL: nats://natshost:4222
   service:
     ports:
