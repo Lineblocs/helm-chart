@@ -1,0 +1,43 @@
+namespace_prefix: ‘’
+# key parameter
+lineblocs_key: ‘123’
+deployment_domain: lineblocs-example.com
+
+# global rules for Nginx ingress
+ingress:
+  custom_annotations:
+    - "Test123"
+    - "Test789"
+
+# check if we need to enable cert manager
+use_certmanager: true
+
+cert_manager:
+  notifications_email: test@example.org
+  version: ‘1.11’
+
+# use the following if use_certmanager=false
+apex_tls_certificates_path: ‘/path/file.txt’
+wildcard_tls_certificates_pathh: ‘/path/file.txt’
+
+# check whether to deploy Percona or not
+deploy_incluster_database: false
+
+# what images to use for DB batch jobs
+db_replication:
+  create_migration_image: lineblocs/dbcreate:latest
+  update_migration_image: lineblocs/dbupdate:latest
+
+# HPA settings for each service
+internals_api:
+  hpa_enabled: true
+  min_replicas: 1
+  max_replicas: 99
+  trigger_percentage: ‘70%’
+webapp:
+  hpa_enabled: true
+  min_replicas: 1
+  max_replicas: 99
+  trigger_percentage: ‘70%’
+
+deploymentDomain: test.com

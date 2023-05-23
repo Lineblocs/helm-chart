@@ -1,0 +1,160 @@
+global:
+  externalMysqlVersion: "5.7"
+
+ingress:
+  enableDemo: false
+  deploymentDomain: lineblocs-test.com
+  certs:
+    issuerName: myac
+    secretName: lineblocs-ingress-tls
+
+app:
+  containers:
+    - name: app
+      image: lineblocs/user-app:master
+      ports:
+        - containerPort: 8000
+  domain: app.
+  envs:
+    configs:
+      DEPLOYMENT_DOMAIN: lineblocs-test.com
+  service:
+    ports:
+      - port: 80
+        targetPort: 80
+
+com:
+  containers:
+    - name: site
+      image: lineblocs/site:master
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 8080
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+          httpHeaders:
+            - name: X-Health
+              value: health
+        initialDelaySeconds: 3
+        periodSeconds: 3
+      resources:
+        requests:
+          cpu: "64m"
+          memory: "32Mi"
+        limits:
+          cpu: "4096m"
+          memory: "16384Mi"
+  domain: com.
+  envs:
+    secrets:
+      - db-secret
+    configs:
+      DEPLOYMENT_DOMAIN: lineblocs-test.com
+      DB_OPENSIPS_DATABASE: CONFIGURED_OPENSIPS_DATABASE
+  service:
+    ports:
+      - port: 80
+        targetPort: 8080
+
+editor:
+  containers:
+    - name: editor
+      image: lineblocs/flow-designer:master
+      ports:
+        - containerPort: 80
+  domain: editor.
+  envs:
+    configs:
+      DEPLOYMENT_DOMAIN: lineblocs-test.com
+  service:
+    ports:
+      - port: 80
+        targetPort: 80
+
+internals:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  containers:
+    - name: lineblocs-internals
+      image: lineblocs/internals-api:master
+      ports:
+        - containerPort: 80
+        - containerPort: 9999
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 80
+          httpHeaders:
+            - name: X-Health
+              value: health
+        initialDelaySeconds: 20
+        periodSeconds: 5
+  envs:
+    secrets:
+      - db-secret
+      - etcd-secret
+    configs:
+      DB_NAME: lineblocs
+      DB_HOST: mysql
+      ETCD_ENDPOINT: http://etcd:2379
+      USE_LIMIT_MIDDLEWARE: off
+      USE_TLS: off
+
+phpmyadmin:
+  containers:
+    - name: phpmyadmin
+      image: phpmyadmin/phpmyadmin
+      ports:
+        - containerPort: 8015
+  envs:
+    secret:
+      - phpmyadmin-secret
+      - db-secret
+    configs:
+      PMA_PORT: 3306
+      PMA_HOST: lineblocs.ckehyurhpc6m.ca-central-1.rds.amazonaws.com
+  services:
+    type: NodePort
+    ports:
+      - port: 80
+        protocol: TCP
+        targetPort: 80
+
+routeeditor:
+  containers:
+    - name: call-route-editor
+      image: lineblocs/call-route-editor:master
+      ports:
+        - containerPort: 8005
+  domain: route.
+  envs:
+    configs:
+      DEPLOYMENT_DOMAIN: lineblocs-test.com
+  service:
+    ports:
+      - port: 80
+        targetPort: 8005
+
+tsbindings:
+  containers:
+    - name: tsbindings
+      image: lineblocs/ts-bindings:master
+      ports:
+        - containerPort: 8080
+  domain: tsc.
+  service:
+    ports:
+      - port: 80
+        targetPort: 8080

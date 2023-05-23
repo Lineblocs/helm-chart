@@ -1,15 +1,21 @@
 dependencies:
-- name: cert-manager
-  repository: https://charts.jetstack.io
-  version: v1.11.0
-- name: etcd
-  repository: https://charts.bitnami.com/bitnami
-  version: 8.7.5
-- name: mysql
-  repository: https://charts.bitnami.com/bitnami
-  version: 9.5.0
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  version: 1.17.1
-digest: sha256:60e887439ad687d4bc2ea757c8c930a9c3bec96cfbaf2b3f2bd18ee133c391b2
-generated: "2023-02-27T00:09:17.705815+05:30"
+- name: libs
+  repository: file://../libs
+  version: 0.1.0
+- name: app
+  repository: ""
+  version: 0.1.0
+- name: tsbindings
+  repository: ""
+  version: 0.1.0
+- name: phpmyadmin
+  repository: ""
+  version: 0.1.0
+- name: internals
+  repository: ""
+  version: 0.1.0
+- name: editor
+  repository: ""
+  version: 0.1.0
+digest: sha256:7a227efa03a6bcf651e02675f19b98f576c363d9cf068c30b4a077fe60764281
+generated: "2023-05-16T22:39:17.659796333+02:00"

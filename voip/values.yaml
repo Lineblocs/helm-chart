@@ -1,15 +1,227 @@
-issuer:
-  name: letsencrypt-prod
+global:
+  externalMysqlVersion: "5.7"
 
-web:
-  service:
-    port: 80
-  ingress:
+asterisk:
+  autoscaling:
     enabled: true
-    annotations: {}
-    hosts:
-      - host: chart-example.local
-        paths: []
-    secretName: web-tls
-    tls: []
-    
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  containers:
+    - name: asterisk
+      image: lineblocs/asterisk:master
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "2048Mi"
+    - name: apps
+      image: lineblocs/ari-apps:master
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+    - name: monitor
+      image: lineblocs/media-monitor:master
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: experimental
+      effect: NoSchedule
+  envs:
+    secrets:
+      - ari-secret
+      - ami-secret
+      - lineblocs-secret
+    configs:
+      ARI_USE_PROXY: false
+      DEPLOYMENT_DOMAIN: lineblocs-test.com
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/service.json"
+      LOG_LEVEL: INFO
+      LINEBLOCS_REGION: ca1
+      NATS_URL: nats://natshost:4222
+  service:
+    ports:
+      - port: 80
+        targetPort: 80
+
+rtpproxy:
+  containers:
+    - name: rtpproxy
+      image: lineblocs/rtpproxy:master
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "2048Mi"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: experimental
+      effect: NoSchedule
+
+mngrs:
+  containers:
+    - name: recordings-mngr
+      image: lineblocs/recordings-mngr:master
+    - name: billing-mngr
+      image: lineblocs/billing-mngr:master
+  envs:
+    secrets:
+      - ari-secret
+      - db-secret
+    configs:
+      DEPLOYMENT_DOMAIN: lineblocs.com
+      LOG_LEVEL: INFO
+
+k8sevents:
+  containers:
+    - name: k8svents
+      image: atomist/k8svent
+    - name: events-processor
+      image: lineblocs/k8s-events:master
+      ports:
+        - containerPort: 8000
+  service:
+    ports:
+      - name: webhook
+        port: 80
+  envs:
+    secrets:
+      - db-secret
+    configs:
+      K8SEVENT_WEBHOOKS: http://127.0.0.1:8000/processEvent
+
+opensips:
+  controllerType: DaemonSet
+  containers:
+    - name: rtpproxy
+      image: lineblocs/rtpproxy:master
+    - name: opensips
+      image: lineblocs/opensips-proxy:master
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "1024Mi"
+        limits:
+          cpu: "300m"
+          memory: "2048Mi"
+  envs:
+    secrets:
+      - db-secret
+      - lineblocs-secret
+    configs:
+      RTPPROXY_IPV4: 127.0.0.1
+      DEPLOYMENT_DOMAIN: lineblocs.com
+
+grpc:
+  containers:
+    - name: grpc-processor
+      image: lineblocs/grpc-proxy:master
+      ports:
+        - containerPort: 8017
+        - containerPort: 9001
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8017
+          httpHeaders:
+            - name: X-Health
+              value: health
+        initialDelaySeconds: 3
+        periodSeconds: 3
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+  service:
+    ports:
+      - name: websocket
+        port: 8017
+      - name: grpc
+        port: 9001
+  envs:
+    secrets:
+      - db-secret
+    configs:
+      LINEBLOCS_REGION: ca1
+
+cronjob-monthly:
+  controllerType: CronJob
+  containers:
+    - name: monthlybill
+      image: lineblocs/crontabs:master
+      args:
+        - /bin/bash
+        - -c
+        - cd /app/ && ./main.go monthly
+  restartPolicy: OnFailure
+  schedule: "0 0 1 * *"
+  envs:
+    secrets:
+      - aws-secret
+      - mailgun-secret
+      - stripe-secret
+
+cronjob-half-hourly:
+  controllerType: CronJob
+  containers:
+    - name: monthlybill
+      image: lineblocs/crontabs:master
+      args:
+        - /bin/bash
+        - -c
+        - cd /app/ && ./main.go half-hour
+  restartPolicy: OnFailure
+  imagePullSecrets:
+    - name: lineblocs-regcred
+  schedule: "*/30 * * * *"
+  envs:
+    secrets:
+      - aws-secret
+      - mailgun-secret
+      - stripe-secret
+
+rbac:
+  - rules:
+      - apiGroups: [ "" ]
+        resources: [ "pods","endpoints","services","nodes" ]
+        verbs: [ "get", "watch", "list" ]
+      - apiGroups: [ "apps" ]
+        resources: [ "deployments" ]
+        verbs: [ "get", "watch", "list", "update", "patch" ]
+    subjects:
+      - kind: User
+        name: system:serviceaccount:voip:default
+        apiGroup: rbac.authorization.k8s.io
+    roleName: voip-manager
+  - roleExists: true
+    subjects:
+      - kind: ServiceAccount
+        # Reference to upper's `metadata.name`
+        name: default
+        # Reference to upper's `metadata.namespace`
+        namespace: voip
+    roleName: cluster-admin
+    clusterWide: true
+
+nats:
+  exporter:
+    enabled: false

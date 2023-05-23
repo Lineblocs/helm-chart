@@ -1,0 +1,23 @@
+Lineblocs web charts need a database secret !
+
+Please provide a db-secret with the following format:
+apiVersion: v1
+metadata:
+  name: db-secret
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  DB_HOST: <host>
+  DB_SCHEMA: <schema>
+  DB_USER: <username>
+  DB_PASS: <password>
+
+You can use with this command:
+kubectl create secret generic db-secret --from-file=DB_USER=db_user.txt --from-file=DB_PASS=db_pass.txt --from-file=DB_SCHEMA=db_schema.txt --from-file=DB_HOST=db_host.txt -n {{ .Release.Namespace }}
+
+But do not forget every other secret you referenced in the chart.
+
+Also, be sure that a metrics-server is present on the destination cluster. You can check if it is installed with the
+following command:
+
+kubectl get deploy,svc -n kube-system | grep metrics-server

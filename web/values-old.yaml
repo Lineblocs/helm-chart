@@ -1,0 +1,116 @@
+deploymentDomain: hahahihihoho
+
+letsencryptEmail: test@lineblocs.com
+
+letsencryptServer:
+
+opensipsDatabase: opensips
+
+lineblocsKey:
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  customAnnotations: {}
+  tls:
+    enabled: true
+    existingSecret:
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/01-app.yml
+app:
+  domain: app.
+  replicas: 1
+  image: {}
+  service: {}
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/04-editor.yml
+editor:
+  replicas: 1
+  image: {}
+  service: {}
+  domain: editor.
+
+tsBinding:
+  replicas: 1
+  image: {}
+  service: {}
+  domain: tsbinding.
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/05-routeeditor.yml
+routeEditor:
+  replicas: 1
+  image: {}
+  service: {}
+  domain: route.
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/02-com.yml
+com:
+  service: {}
+  replicas: 1
+  image: {}
+  domain: com.
+  resources:
+    requests: {}
+    limit: {}
+
+internalApi:
+  replicas: 1
+  image: {}
+  resources:
+    requests: {}
+    limit: {}
+  service:
+    type: ""
+  useLimitMiddleware: off
+  useTls: off
+  domain: internal.
+
+certmanager:
+  enabled: false
+  installCRDs: false # installed as part of this chart
+
+##############
+
+# https://github.com/Lineblocs/iac-scripts/blob/master/k8s/web/06-internals.yml
+
+
+etcd:
+  enabled: true
+  persistence:
+    enabled: false
+  service:
+    enabled: false
+
+
+externalMysqlHost: ""
+externalMysqlUser: ""
+externalMysqlPassword: ""
+externalMysqlDatabase: ""
+externalMysqlRootPassword: ""
+
+externalEtcdHost: ""
+externalEtcdRootPassword: ""
+
+initDb: true
+
+mysql:
+  enabled: true
+  auth:
+    rootPassword: root
+    username: debdut
+    password: debdut
+    database: lineblocs
+
+phpmyadmin:
+  domain: phpmyadmin.github.com
+
+voip:
+  amiHost:
+  amiUser:
+  amiPort:
+  amiPassword:
+  ariUser:
+  ariHost:
+  ariPassword:
+  ariPort:
+  ariUseProxy:

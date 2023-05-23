@@ -1,0 +1,33 @@
+dependencies:
+- name: nats
+  repository: https://nats-io.github.io/k8s/helm/charts/
+  version: 0.19.13
+- name: asterisk
+  repository: ""
+  version: 0.1.0
+- name: grpc
+  repository: ""
+  version: 0.1.0
+- name: rtpproxy
+  repository: ""
+  version: 0.1.0
+- name: k8sevents
+  repository: ""
+  version: 0.1.0
+- name: mngrs
+  repository: ""
+  version: 0.1.0
+- name: opensips
+  repository: ""
+  version: 0.1.0
+- name: libs
+  repository: ""
+  version: 0.1.0
+- name: cronjob-monthly
+  repository: ""
+  version: 0.1.0
+- name: cronjob-half-hourly
+  repository: ""
+  version: 0.1.0
+digest: sha256:fd066761bb7478c2aa9a02faf8eb863cf4dcafd3d5735ad1be13b2aac0db08b8
+generated: "2023-05-18T20:16:13.789240605+02:00"
