@@ -9,11 +9,21 @@ for Kubernetes that makes it easy to define, install, and manage applications as
 
 ## Table of Contents
 
+- [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+
+## Compatibility
+
+| K8s version | is compatible |
+|-------------|---------------|
+| 1.27        | yes           |
+| 1.26        | yes           |
+| 1.25        | yes           |
+| 1.24        | yes           |
+| 1.23        | yes           |
+| 1.22        | no            |
  
 ## Installation
 
@@ -155,25 +165,8 @@ web and voip charts.
 If you need to declare variation for a specific cloud provider, you can create a new values file (`values-gcp.yaml` for example).
 It will inherit `values.yaml` so you will be able to only override what you want.
 
-## Contributing
+### Adding a new service
 
-We welcome contributions to this project. To contribute, please follow these steps:
-
-1. Fork the repository and clone it to your local machine.
-
-2. Create a new branch for your feature or bug fix.
-
-3. Make your changes and test thoroughly.
-
-4. Commit your changes with descriptive commit messages.
-
-5. Push your changes to your forked repository.
-
-6. Submit a pull request, clearly describing the changes you have made.
-
-We appreciate your contributions!
-
-## License
-
-Do you need any license ?
-
+If you wish to add a new service to one of the charts, you can go in the `charts` folder and create a new subchart.
+Normally, you can copy another subchart like `app` or `com` for `web` chart and modify chart name in `Chart.yaml`.
+Then, reference it in `values.yaml`, like the others, so it has default values !
