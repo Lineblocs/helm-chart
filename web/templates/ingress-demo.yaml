@@ -5,10 +5,10 @@ metadata:
   name: ingress
   annotations:
     kubernetes.io/ingress.class: {{ default "nginx" .Values.ingress.ingressClassName }}
-    {{- with .Values.ingress.certs.issuerName -}}
+    {{- with .Values.ingress.certs.issuerName }}
     cert-manager.io/cluster-issuer: {{ . }}
     default-ssl-certificate: {{ . }}
-    {{- end -}}
+    {{- end }}
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     ingress.kubernetes.io/proxy-body-size: "128m"
@@ -16,17 +16,19 @@ metadata:
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
-    {{ .Values.ingress.annotations | toYaml | indent 4 | trim }}
+    {{- with .Values.ingress.annotations }}
+    {{ . | toYaml | indent 4 | trim }}
+    {{- end }}
 spec:
   tls:
     - hosts:
-        - lineblocs-test.com
-        - app.lineblocs-test.com
-        - editor.lineblocs-test.com
-        - phpmyadmin.lineblocs-test.com
-        - internals.lineblocs-test.com
-        - prv.lineblocs-test.com
-        - tsc.lineblocs-test.com
+        - {{ .Values.ingress.deploymentDomain }}
+        - app.{{ .Values.ingress.deploymentDomain }}
+        - editor.{{ .Values.ingress.deploymentDomain }}
+        - phpmyadmin.{{ .Values.ingress.deploymentDomain }}
+        - internals.{{ .Values.ingress.deploymentDomain }}
+        - prv.{{ .Values.ingress.deploymentDomain }}
+        - tsc.{{ .Values.ingress.deploymentDomain }}
       secretName: {{ .Values.ingress.certs.secretName }}
   rules:
     - host: {{ .Values.ingress.deploymentDomain }}
@@ -39,7 +41,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: app.lineblocs-test.com
+    - host: app.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -49,7 +51,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: editor.lineblocs-test.com
+    - host: editor.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -59,7 +61,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: phpmyadmin.lineblocs-test.com
+    - host: phpmyadmin.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -69,7 +71,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: internals.lineblocs-test.com
+    - host: internals.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -79,7 +81,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: prv.lineblocs-test.com
+    - host: prv.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
@@ -89,7 +91,7 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
-    - host: tsc.lineblocs-test.com
+    - host: tsc.{{ .Values.ingress.deploymentDomain }}
       http:
         paths:
           - backend:
