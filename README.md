@@ -64,7 +64,7 @@ To install the Helm chart, follow these steps:
    helm install [release_name] . -n [namespace]
    ```
 
-   Replace `[release_name]` with the desired name for your release.
+   Replace `[release_name]` with the desired name for your release and namespace with the one you want to deploy to.
    You can also pass specific values to this command with -f. By default, it will use default values (`values.yaml`)
    but you can give any yaml file you want as long as it is valid (see below).
 
