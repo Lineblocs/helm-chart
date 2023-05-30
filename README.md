@@ -214,6 +214,7 @@ security reasons. Here is a list of the ones you will need to create :
 - etcd-secret
   - ETCD_ENDPOINT, ETCD_USERNAME, ETCD_PASSWORD
 
+
 In order to create a secret, you can use :
 ```bash
 kubectl create secret generic [name_of_secret] --from-literal VARIABLE=[value] --from-file VARIABLE=[path_to_file_with_value] -n [namespace]
