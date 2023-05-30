@@ -104,7 +104,11 @@ include "resource.name" (dict "name" "$name" "context" .)*/}}
 {{/*Usage:*/}}
 {{/*include "resource.metadata" (dict "name" "$name" "context" .)*/}}
 {{- define "resource.metadata" }}
+  {{- if .trunc }}
+  name: {{ include "resource.name" (dict "name" .name "context" .context) | trunc .trunc | quote }}
+  {{- else }}
   name: {{ include "resource.name" (dict "name" .name "context" .context) | quote }}
+  {{- end }}
   labels:
   {{- with .context }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}

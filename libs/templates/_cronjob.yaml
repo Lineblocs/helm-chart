@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  {{- include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
+  {{- include "resource.metadata" (dict "name" .Chart.Name "context" . "trunc" 52) }}
 spec:
   schedule: {{ default "* * 1 * *" .Values.schedule | quote }}
   jobTemplate:
