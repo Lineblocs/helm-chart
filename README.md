@@ -194,18 +194,25 @@ security reasons. Here is a list of the ones you will need to create :
 
 ### voip:
 - ami-secret
+  - AMI_HOST, AMI_PORT, AMI_USERNAME, AMI_PASSWORD
 - ari-secret
+  - ARI_HOST, ARI_PORT, ARI_USERNAME, ARI_PASSWORD
 - aws-secret
+  - AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 - db-secret
     - DB_USER, DB_PASS, DB_SCHEMA, DB_HOST
 - lineblocs-secret
+  - LINEBLOCS_KEY
 - mailgun-secret
+  - MAILGUN_DOMAIN, MAILGUN_API_KEY
 - stripe-secret
+  - STRIPE_KEY
 
 ### web
 - db-secret
    - DB_USER, DB_PASS, DB_SCHEMA, DB_HOST
 - etcd-secret
+  - ETCD_ENDPOINT, ETCD_USERNAME, ETCD_PASSWORD
 
 In order to create a secret, you can use :
 ```bash
