@@ -13,6 +13,7 @@ for Kubernetes that makes it easy to define, install, and manage applications as
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Required secrets](#required-secrets)
 
 ## Compatibility
 
@@ -47,19 +48,27 @@ To install the Helm chart, follow these steps:
 
 5. Customize the chart's values in the `values.yaml` file according to your requirements.
 
-6. Deploy the chart to your Kubernetes cluster using the following Helm command:
+6. Don't forget to do either a build or an update of Helm dependencies if you haven't already :
+
+   ```bash
+   # Will install exactly what is defined in Chart.lock
+   helm dependency build
+   
+   # Will update to the latest version acceptable by version pattern in Chart.yaml and update Chart.lock
+   helm dependency update 
+   ```
+
+7. Deploy the chart to your Kubernetes cluster using the following Helm command:
 
    ```bash
    helm install [release-name] .
    ```
 
    Replace `[release-name]` with the desired name for your release.
+   You can also pass specific values to this command with -f. By default, it will use default values (`values.yaml`)
+   but you can give any yaml file you want as long as it is valid (see below).
 
 For more detailed instructions on installing and managing Helm charts, please refer to the [Helm documentation](https://helm.sh/docs/).
-
-## Usage
-
-**Lineblocs web and voip specific documentation if needed**
 
 ## Configuration
 
@@ -170,3 +179,33 @@ It will inherit `values.yaml` so you will be able to only override what you want
 If you wish to add a new service to one of the charts, you can go in the `charts` folder and create a new subchart.
 Normally, you can copy another subchart like `app` or `com` for `web` chart and modify chart name in `Chart.yaml`.
 Then, reference it in `values.yaml`, like the others, so it has default values !
+
+PS: don't forget to reference your new service in the main `Chart.yaml` (of voip or web) in the field `dependencies` to
+keep things clean.
+
+## Required secrets
+
+You will need to add secrets yourself in order for everything to work. They are not managed by this repo for obvious
+security reasons. Here is a list of the ones you will need to create :
+
+### voip:
+- ami-secret
+- ari-secret
+- aws-secret
+- db-secret
+    - DB_USER, DB_PASS, DB_SCHEMA, DB_HOST
+- lineblocs-secret
+- mailgun-secret
+- stripe-secret
+
+### web
+- db-secret
+   - DB_USER, DB_PASS, DB_SCHEMA, DB_HOST
+- etcd-secret
+
+In order to create a secret, you can use :
+```bash
+kubectl create secret generic [name_of_secret] --from-literal VARIABLE=[value] --from-file VARIABLE=[path_to_file_with_value] -n [namespace]
+```
+
+For more details about Kubernetes secrets, please refer to [this documentation](https://kubernetes.io/fr/docs/concepts/configuration/secret/).
