@@ -61,12 +61,16 @@ To install the Helm chart, follow these steps:
 7. Deploy the chart to your Kubernetes cluster using the following Helm command:
 
    ```bash
-   helm install [release-name] .
+   helm install [release_name] . -n [namespace]
    ```
 
-   Replace `[release-name]` with the desired name for your release.
+   Replace `[release_name]` with the desired name for your release.
    You can also pass specific values to this command with -f. By default, it will use default values (`values.yaml`)
    but you can give any yaml file you want as long as it is valid (see below).
+
+   ```bash
+   helm install [release_name] . -n [namespace] -f [valid_yaml_file]
+   ```
 
 For more detailed instructions on installing and managing Helm charts, please refer to the [Helm documentation](https://helm.sh/docs/).
 
