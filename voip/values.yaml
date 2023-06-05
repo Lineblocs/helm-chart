@@ -180,25 +180,6 @@ cronjob-monthly:
       - mailgun-secret
       - stripe-secret
 
-cronjob-half-hourly:
-  controllerType: CronJob
-  containers:
-    - name: monthlybill
-      image: lineblocs/crontabs:master
-      args:
-        - /bin/bash
-        - -c
-        - cd /app/ && ./main.go half-hour
-  restartPolicy: OnFailure
-  imagePullSecrets:
-    - name: lineblocs-regcred
-  schedule: "*/30 * * * *"
-  envs:
-    secrets:
-      - aws-secret
-      - mailgun-secret
-      - stripe-secret
-
 rbac:
   - rules:
       - apiGroups: [ "" ]
@@ -221,7 +202,3 @@ rbac:
         namespace: voip
     roleName: cluster-admin
     clusterWide: true
-
-nats:
-  exporter:
-    enabled: false
