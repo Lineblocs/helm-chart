@@ -1,7 +1,4 @@
 dependencies:
-- name: nats
-  repository: https://nats-io.github.io/k8s/helm/charts/
-  version: 0.19.13
 - name: asterisk
   repository: ""
   version: 0.1.0
@@ -23,11 +20,5 @@ dependencies:
 - name: libs
   repository: ""
   version: 0.1.0
-- name: cronjob-monthly
-  repository: ""
-  version: 0.1.0
-- name: cronjob-half-hourly
-  repository: ""
-  version: 0.1.0
-digest: sha256:fd066761bb7478c2aa9a02faf8eb863cf4dcafd3d5735ad1be13b2aac0db08b8
-generated: "2023-05-18T20:16:13.789240605+02:00"
+digest: sha256:21b0e684cfab5ba4c899dc1e9a1225c305ae8ec4dae89fa2e7577faf7092ddd8
+generated: "2023-06-06T18:58:44.94757758Z"
