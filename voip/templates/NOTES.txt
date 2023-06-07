@@ -8,12 +8,12 @@ metadata:
 type: Opaque
 data:
   DB_HOST: <host>
-  DB_SCHEMA: <schema>
+  DB_NAME: <schema>
   DB_USER: <username>
   DB_PASS: <password>
 
 You can use with this command:
-kubectl create secret generic db-secret --from-file=DB_USER=db_user.txt --from-file=DB_PASS=db_pass.txt --from-file=DB_SCHEMA=db_schema.txt --from-file=DB_HOST=db_host.txt -n {{ .Release.Namespace }}
+kubectl create secret generic db-secret --from-file=DB_USER=db_user.txt --from-file=DB_PASS=db_pass.txt --from-file=DB_NAME=DB_NAME.txt --from-file=DB_HOST=db_host.txt -n {{ .Release.Namespace }}
 
 But do not forget every other secret you referenced in the chart.
 
