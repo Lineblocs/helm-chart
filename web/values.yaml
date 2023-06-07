@@ -52,7 +52,7 @@ com:
       - db-secret
     configs:
       DEPLOYMENT_DOMAIN: lineblocs-test.com
-      DB_OPENSIPS_DATABASE: CONFIGURED_OPENSIPS_DATABASE
+      DB_OPENSIPS_DATABASE: opensips
   service:
     ports:
       - port: 80
