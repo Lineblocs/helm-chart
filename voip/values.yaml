@@ -109,10 +109,10 @@ k8sevents:
 opensips:
   controllerType: DaemonSet
   containers:
-    - name: rtpproxy
-      image: lineblocs/rtpproxy:master
     - name: opensips
       image: lineblocs/opensips-proxy:master
+    - name: rtpproxy
+      image: lineblocs/rtpproxy:master
       resources:
         requests:
           cpu: "100m"
