@@ -3,6 +3,9 @@ global:
   envs:
     DEPLOYMENT_DOMAIN: lineblocs.com
 
+etcd:
+  enabled: false
+
 ingress:
   enableDemo: true
   deploymentDomain: lineblocs-test.site
