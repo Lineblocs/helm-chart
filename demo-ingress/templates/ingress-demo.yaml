@@ -1,0 +1,102 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: {{ default "nginx" .Values.ingressClassName }}
+    {{- with .Values.certs.issuerName }}
+    cert-manager.io/cluster-issuer: {{ . }}
+    default-ssl-certificate: {{ . }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    ingress.kubernetes.io/proxy-body-size: "128m"
+    nginx.org/proxy-connect-timeout: "30s"
+    nginx.org/proxy-read-timeout: "20s"
+    nginx.org/client-max-body-size: "128m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    {{- with .Values.annotations }}
+    {{ . | toYaml | indent 4 | trim }}
+    {{- end }}
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.deploymentDomain }}
+        - app.{{ .Values.deploymentDomain }}
+        - editor.{{ .Values.deploymentDomain }}
+        - phpmyadmin.{{ .Values.deploymentDomain }}
+        - internals.{{ .Values.deploymentDomain }}
+        - prv.{{ .Values.deploymentDomain }}
+        - tsc.{{ .Values.deploymentDomain }}
+      secretName: {{ .Values.certs.secretName }}
+  rules:
+    - host: {{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-com
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: app.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-app
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: editor.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-editor
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: phpmyadmin.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: phpmyadmin-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: internals.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-internals
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: prv.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-prv
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    - host: tsc.{{ .Values.deploymentDomain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: lineblocs-tsc-compiler
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

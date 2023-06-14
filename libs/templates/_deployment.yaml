@@ -26,9 +26,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .image }}"
-          {{- with .imagePullPolicy}}
-          imagePullPolicy: {{ . }}
-          {{- end }}
+          imagePullPolicy: {{ or .imagePullPolicy $.Values.global.imagePullPolicy | default "IfNotPresent" }}
           envFrom:
           {{- with .envs }}
           # Container specific secret
