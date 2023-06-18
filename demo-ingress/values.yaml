@@ -2,3 +2,6 @@ deploymentDomain: lineblocs-test.site
 certs:
   issuerName: myac
   secretName: lineblocs-ingress-tls
+tls:
+  enabled: true
+  force: false

@@ -15,10 +15,14 @@ metadata:
     nginx.org/proxy-read-timeout: "20s"
     nginx.org/client-max-body-size: "128m"
     nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    {{- if .Values.tls.force }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    {{- end }}
     {{- with .Values.annotations }}
     {{ . | toYaml | indent 4 | trim }}
     {{- end }}
 spec:
+  {{- if .Values.tls.enabled }}
   tls:
     - hosts:
         - {{ .Values.deploymentDomain }}
@@ -29,6 +33,7 @@ spec:
         - prv.{{ .Values.deploymentDomain }}
         - tsc.{{ .Values.deploymentDomain }}
       secretName: {{ .Values.certs.secretName }}
+  {{- end }}
   rules:
     - host: {{ .Values.deploymentDomain }}
       http:
