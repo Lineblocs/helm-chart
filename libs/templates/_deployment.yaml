@@ -64,8 +64,6 @@ spec:
           {{- with .resources }}
           resources: {{ toYaml . | nindent 12 }}
           {{- end }}
-          # the policy is currently hardcoded. todo: change this to something better in the future
-          imagePullPolicy: Always
       {{- end }}
       {{- with .nodeSelector }}
       nodeSelector: {{ toYaml . | nindent 8 }}
