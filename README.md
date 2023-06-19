@@ -11,7 +11,6 @@ for Kubernetes that makes it easy to define, install, and manage applications as
 
 - [Compatibility](#compatibility)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Configuration](#configuration)
 - [Required secrets](#required-secrets)
 
@@ -189,7 +188,7 @@ It will inherit `values.yaml` so you will be able to only override what you want
 
 If you wish to add a new service to one of the charts, you can go in the `charts` folder and create a new subchart.
 Normally, you can copy another subchart like `app` or `com` for `web` chart and modify chart name in `Chart.yaml`.
-Then, reference it in `values.yaml`, like the others, so it has default values !
+Then, reference it in `values.yaml`, like the others, so it has default values!
 
 PS: don't forget to reference your new service in the main `Chart.yaml` (of voip or web) in the field `dependencies` to
 keep things clean.

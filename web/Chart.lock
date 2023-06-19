@@ -1,4 +1,7 @@
 dependencies:
+- name: etcd
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.12.0
 - name: libs
   repository: ""
   version: 0.1.0
@@ -17,5 +20,5 @@ dependencies:
 - name: editor
   repository: ""
   version: 0.1.0
-digest: sha256:49cbc367d53c324e2032570e18792df88436ee44e76cee8d063d2d214e6a01b0
-generated: "2023-06-06T18:51:03.407751871Z"
+digest: sha256:8a1f316c6c7a739ba7c58a984740723d185a8934606e92216e46ae73f9d46a38
+generated: "2023-06-14T19:26:35.946028212+02:00"

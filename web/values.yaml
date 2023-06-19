@@ -1,5 +1,10 @@
 global:
   externalMysqlVersion: "5.7"
+  envs:
+    DEPLOYMENT_DOMAIN: lineblocs.com
+
+etcd:
+  enabled: false
 
 ingress:
   enableDemo: true
@@ -15,9 +20,6 @@ app:
       ports:
         - containerPort: 8000
   domain: app.
-  envs:
-    configs:
-      DEPLOYMENT_DOMAIN: lineblocs-test.com
   service:
     ports:
       - port: 80
@@ -51,7 +53,6 @@ com:
     secrets:
       - db-secret
     configs:
-      DEPLOYMENT_DOMAIN: lineblocs-test.com
       DB_OPENSIPS_DATABASE: opensips
   service:
     ports:
@@ -65,9 +66,6 @@ editor:
       ports:
         - containerPort: 80
   domain: editor.
-  envs:
-    configs:
-      DEPLOYMENT_DOMAIN: lineblocs-test.com
   service:
     ports:
       - port: 80
@@ -140,9 +138,6 @@ routeeditor:
       ports:
         - containerPort: 8005
   domain: route.
-  envs:
-    configs:
-      DEPLOYMENT_DOMAIN: lineblocs-test.com
   service:
     ports:
       - port: 80

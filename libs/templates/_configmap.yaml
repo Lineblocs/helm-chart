@@ -8,6 +8,9 @@ data:
   {{- range $key, $value := .Values.envs.configs }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
+  {{- range $key, $value := .Values.global.envs }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
 ---
 
 {{- end -}}
