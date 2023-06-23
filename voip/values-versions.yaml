@@ -1,0 +1,5 @@
+global:
+  release: stable
+  releases:
+    stable:
+      app: master
