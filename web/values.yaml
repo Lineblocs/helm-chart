@@ -3,6 +3,8 @@ global:
   envs:
     DEPLOYMENT_DOMAIN: lineblocs.com
 
+# TODO: add tags for components
+
 etcd:
   enabled: false
 
@@ -16,7 +18,7 @@ ingress:
 app:
   containers:
     - name: app
-      image: lineblocs/user-app:master
+      image: lineblocs/user-app
       ports:
         - containerPort: 8000
   domain: app.
@@ -28,7 +30,7 @@ app:
 com:
   containers:
     - name: site
-      image: lineblocs/site:master
+      image: lineblocs/site
       imagePullPolicy: Always
       ports:
         - containerPort: 8080
@@ -62,7 +64,7 @@ com:
 editor:
   containers:
     - name: editor
-      image: lineblocs/flow-designer:master
+      image: lineblocs/flow-designer
       ports:
         - containerPort: 80
   domain: editor.
@@ -79,7 +81,7 @@ internals:
     targetCPUUtilizationPercentage: 80
   containers:
     - name: lineblocs-internals
-      image: lineblocs/internals-api:master
+      image: lineblocs/internals-api
       ports:
         - containerPort: 80
         - containerPort: 9999
@@ -134,7 +136,7 @@ phpmyadmin:
 routeeditor:
   containers:
     - name: call-route-editor
-      image: lineblocs/call-route-editor:master
+      image: lineblocs/call-route-editor
       ports:
         - containerPort: 8005
   domain: route.
@@ -146,7 +148,7 @@ routeeditor:
 tsbindings:
   containers:
     - name: tsbindings
-      image: lineblocs/ts-bindings:master
+      image: lineblocs/ts-bindings
       ports:
         - containerPort: 8080
   domain: tsc.
