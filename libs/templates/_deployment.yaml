@@ -18,12 +18,24 @@ spec:
       labels:
         {{- include "libs.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.pvc }}
+      volumes:
+      {{- range . }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}
+      {{- end }}
+      {{- end }}
       containers:
       {{- range .Values.containers }}
         - name: {{ .name }}
           {{- with .securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .volumesMounts }}
+          volumeMounts:
+            {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- /* We try to use first the component version defined, or the one defined for the selected release. If both
                  are empty, it will print no tag */}}

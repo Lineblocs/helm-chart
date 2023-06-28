@@ -6,8 +6,7 @@
 {{ include "libs.hpa" . }}
 {{ include "libs.service" . }}
 {{ include "libs.rbac" . }}
-{{/*{{- include "ingress" . }}*/}}
-{{/*{{- include "serviceaccount" . }}*/}}
+{{ include "libs.pvc" . }}
 {{- end -}}
 
 
