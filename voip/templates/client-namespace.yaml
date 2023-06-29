@@ -1,0 +1,6 @@
+{{- if (.Values.deployClientNamespace | default true)  }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Chart.Namew }}-users
+{{- end }}
