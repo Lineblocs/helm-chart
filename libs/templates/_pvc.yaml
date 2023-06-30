@@ -1,0 +1,19 @@
+{{- define "libs.pvc" -}}
+{{- range .Values.pvc}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- with .storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+---
+
+{{- end }}
+{{- end -}}

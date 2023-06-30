@@ -32,30 +32,36 @@ com:
     - name: site
       image: lineblocs/site
       imagePullPolicy: Always
-      ports:
-        - containerPort: 8080
       livenessProbe:
         httpGet:
-          path: /healthz
-          port: 8080
           httpHeaders:
             - name: X-Health
               value: health
+          path: /healthz
+          port: 8080
         initialDelaySeconds: 3
         periodSeconds: 3
+      ports:
+        - containerPort: 8080
       resources:
-        requests:
-          cpu: "64m"
-          memory: "32Mi"
         limits:
           cpu: "4096m"
           memory: "16384Mi"
+        requests:
+          cpu: "64m"
+          memory: "32Mi"
+      volumeMounts:
+        - name: site
+          mountPath: /var/www/html/storage/app/public
   domain: com.
   envs:
-    secrets:
-      - db-secret
     configs:
       DB_OPENSIPS_DATABASE: opensips
+    secrets:
+      - db-secret
+  pvc:
+    - name: site
+      size: 2Gi
   service:
     ports:
       - port: 80
