@@ -71,6 +71,11 @@ To install the Helm chart, follow these steps:
    helm install [release_name] . -n [namespace] -f [valid_yaml_file]
    ```
 
+   If you want to install the chart with a specific release (they are defined in `values-versions.yaml`), please join
+   this file with -f option too and in your main values file specify a `release` field under global object. As value,
+   put the desired release you want to install. Please note that the `tag` field defined in components values overrides
+   releases tags.
+
 For more detailed instructions on installing and managing Helm charts, please refer to
 the [Helm documentation](https://helm.sh/docs/).
 
@@ -129,6 +134,7 @@ Here is the content of web chart folder :
 │ ├── ingress-demo.yaml
 │ ├── init-db-configmap.yaml
 │ └── NOTES.txt # displayed information when installing the chart
+├── values-versions.yaml # contains releases which can be then installed later 
 └── values.yaml # default values
 ```
 
@@ -184,11 +190,38 @@ If you need to declare variation for a specific cloud provider, you can create a
 example).
 It will inherit `values.yaml` so you will be able to only override what you want.
 
+### Releases
+
+In the `values-versions.yaml` file, you will find informations about each releases :
+
+```yaml
+global:
+  releases:
+    stable:
+      app: master
+      com: ...
+```
+
+In your desired values file containing all the rest, add a `release` field under global :
+
+```yaml
+global:
+  release: stable
+
+app:
+...
+```
+
+`release` field is the chosen release for this installation of the chart (each values can be overriden in each
+component afterward). `releases` object contains each release and versions of some or all components.
+
 ### Adding a new service
 
 If you wish to add a new service to one of the charts, you can go in the `charts` folder and create a new subchart.
 Normally, you can copy another subchart like `app` or `com` for `web` chart and modify chart name in `Chart.yaml`.
 Then, reference it in `values.yaml`, like the others, so it has default values!
+
+You can also reference your new component in the `values-versions.yaml` file too.
 
 PS: don't forget to reference your new service in the main `Chart.yaml` (of voip or web) in the field `dependencies` to
 keep things clean.
@@ -196,7 +229,7 @@ keep things clean.
 ## Required secrets
 
 You will need to add secrets yourself in order for everything to work. They are not managed by this repo for obvious
-security reasons. 
+security reasons.
 
 In order to create a secret, you can use :
 
@@ -229,7 +262,6 @@ Here is a list of the ones you will need to create :
     - DB_USER, DB_PASS, DB_NAME, DB_HOST
 - etcd-secret
     - ETCD_ENDPOINT, ETCD_USERNAME, ETCD_PASSWORD
-
 
 For more details about Kubernetes secrets, please refer
 to [this documentation](https://kubernetes.io/fr/docs/concepts/configuration/secret/).
