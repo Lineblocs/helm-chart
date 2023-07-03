@@ -41,11 +41,11 @@ spec:
                  are empty, it will print no tag */}}
           {{- $containerTag := "" }}
           {{- if and ($.Values.global.releases) ($.Values.global.release) }}
-          {{- $release := get $.Values.global.releases $.Values.global.release }}
-          {{- $chart := get $release $.Chart.Name }}
-          {{- if kindIs "map" $chart }}
-          {{- $containerTag = get $chart .name }}
-          {{- end }}
+            {{- $release := get $.Values.global.releases $.Values.global.release }}
+            {{- $chart := get $release $.Chart.Name }}
+            {{- if kindIs "map" $chart }}
+              {{- $containerTag = get $chart .name }}
+            {{- end }}
           {{- end }}
           {{- if .tag }}
           image: "{{ .image }}:{{ .tag }}"
