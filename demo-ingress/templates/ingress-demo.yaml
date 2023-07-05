@@ -40,7 +40,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-com
+                name: {{ .Values.webChartReleaseName }}-com
                 port:
                   number: 80
             path: /
@@ -50,7 +50,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-app
+                name: {{ .Values.webChartReleaseName }}-app
                 port:
                   number: 80
             path: /
@@ -60,7 +60,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-editor
+                name: {{ .Values.webChartReleaseName }}-editor
                 port:
                   number: 80
             path: /
@@ -72,7 +72,7 @@ spec:
               service:
                 name: phpmyadmin-service
                 port:
-                  number: 80
+                  number: {{ .Values.ports }}
             path: /
             pathType: Prefix
     - host: internals.{{ .Values.deploymentDomain }}
@@ -80,7 +80,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-internals
+                name: {{ .Values.webChartReleaseName }}-internals
                 port:
                   number: 80
             path: /
@@ -90,7 +90,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-prv
+                name: {{ .Values.webChartReleaseName }}-prv
                 port:
                   number: 80
             path: /
@@ -100,7 +100,7 @@ spec:
         paths:
           - backend:
               service:
-                name: lineblocs-tsc-compiler
+                name: {{ .Values.webChartReleaseName }}-tsc-compiler
                 port:
                   number: 80
             path: /

@@ -11,7 +11,7 @@ asterisk:
     targetCPUUtilizationPercentage: 80
   containers:
     - name: asterisk
-      image: lineblocs/asterisk
+      image: lineblocs/asterisk:master
       resources:
         requests:
           cpu: "10m"
@@ -20,7 +20,7 @@ asterisk:
           cpu: "300m"
           memory: "2048Mi"
     - name: apps
-      image: lineblocs/ari-apps
+      image: lineblocs/ari-apps:master
       resources:
         requests:
           cpu: "10m"
@@ -29,7 +29,7 @@ asterisk:
           cpu: "300m"
           memory: "256Mi"
     - name: monitor
-      image: lineblocs/media-monitor
+      image: lineblocs/media-monitor:master
       resources:
         requests:
           cpu: "10m"
@@ -46,6 +46,7 @@ asterisk:
     secrets:
       - ari-secret
       - ami-secret
+      - db-secret
       - lineblocs-secret
     configs:
       ARI_USE_PROXY: false
@@ -62,7 +63,7 @@ asterisk:
 rtpproxy:
   containers:
     - name: rtpproxy
-      image: lineblocs/rtpproxy
+      image: lineblocs/rtpproxy:master
       resources:
         requests:
           cpu: "10m"
@@ -79,9 +80,9 @@ rtpproxy:
 mngrs:
   containers:
     - name: recordings-mngr
-      image: lineblocs/recordings-mngr
+      image: lineblocs/recordings-mngr:master
     - name: billing-mngr
-      image: lineblocs/billing-mngr
+      image: lineblocs/billing-mngr:master
   envs:
     secrets:
       - ari-secret
@@ -95,13 +96,14 @@ k8sevents:
     - name: k8svents
       image: atomist/k8svent
     - name: events-processor
-      image: lineblocs/k8s-events
+      image: lineblocs/k8s-events:master
       ports:
         - containerPort: 8000
   service:
     ports:
       - name: webhook
         port: 80
+  serviceAccountName: voip-lineblocs-admin
   envs:
     secrets:
       - db-secret
@@ -112,9 +114,9 @@ opensips:
   controllerType: DaemonSet
   containers:
     - name: opensips
-      image: lineblocs/opensips-proxy
+      image: lineblocs/opensips-proxy:master
     - name: rtpproxy
-      image: lineblocs/rtpproxy
+      image: lineblocs/rtpproxy:master
       resources:
         requests:
           cpu: "100m"
@@ -133,7 +135,7 @@ opensips:
 grpc:
   containers:
     - name: grpc-processor
-      image: lineblocs/grpc-proxy
+      image: lineblocs/grpc-proxy:master
       ports:
         - containerPort: 8017
         - containerPort: 9001
@@ -169,7 +171,7 @@ cronjob-monthly:
   controllerType: CronJob
   containers:
     - name: monthlybill
-      image: lineblocs/crontabs
+      image: lineblocs/crontabs:master
       args:
         - /bin/bash
         - -c
@@ -182,6 +184,8 @@ cronjob-monthly:
       - mailgun-secret
       - stripe-secret
 
+# These RBAC rules are only for testing right now
+# TODO: Add proper, fine-grained rules
 rbac:
   - rules:
       - apiGroups: [ "" ]
@@ -195,6 +199,7 @@ rbac:
         name: system:serviceaccount:voip:default
         apiGroup: rbac.authorization.k8s.io
     roleName: voip-manager
+    clusterRoleName: voip-manager
   - roleExists: true
     subjects:
       - kind: ServiceAccount
@@ -203,4 +208,5 @@ rbac:
         # Reference to upper's `metadata.namespace`
         namespace: voip
     roleName: cluster-admin
+    clusterRoleName: voip-lineblocs-admin
     clusterWide: true

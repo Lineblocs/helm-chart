@@ -1,0 +1,6 @@
+deploymentDomain: a9e36dde21fb940999720d7d7be65ee9-a5690ca961bf7ab9.elb.eu-west-3.amazonaws.com
+certs: {}
+tls:
+  enabled: false
+  force: false
+webChartReleaseName: web
