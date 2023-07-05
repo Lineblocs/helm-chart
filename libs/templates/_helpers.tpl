@@ -1,3 +1,7 @@
+{{/*
+It does not include libs.rbac, because it will not be used in subchrats.
+libs.rbac will be called from global chart directly and referenced in rbac object in values file.
+*/}}
 {{- define "libs.all" -}}
 {{ include "libs.configmap" . }}
 {{ include "libs.cronjob" . }}
@@ -5,7 +9,6 @@
 {{ include "libs.deployment" . }}
 {{ include "libs.hpa" . }}
 {{ include "libs.service" . }}
-{{ include "libs.rbac" . }}
 {{ include "libs.pvc" . }}
 {{- end -}}
 

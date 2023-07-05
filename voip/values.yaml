@@ -102,6 +102,7 @@ k8sevents:
     ports:
       - name: webhook
         port: 80
+  serviceAccountName: voip-lineblocs-admin
   envs:
     secrets:
       - db-secret
@@ -182,6 +183,8 @@ cronjob-monthly:
       - mailgun-secret
       - stripe-secret
 
+# These RBAC rules are only for testing right now
+# TODO: Add proper, fine-grained rules
 rbac:
   - rules:
       - apiGroups: [ "" ]
@@ -195,6 +198,7 @@ rbac:
         name: system:serviceaccount:voip:default
         apiGroup: rbac.authorization.k8s.io
     roleName: voip-manager
+    clusterRoleName: voip-manager
   - roleExists: true
     subjects:
       - kind: ServiceAccount
@@ -203,4 +207,5 @@ rbac:
         # Reference to upper's `metadata.namespace`
         namespace: voip
     roleName: cluster-admin
+    clusterRoleName: voip-lineblocs-admin
     clusterWide: true

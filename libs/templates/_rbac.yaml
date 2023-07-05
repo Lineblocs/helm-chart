@@ -1,24 +1,31 @@
+{{/* libs.rbac is not included in libs.all because it should not be included with subcharts like app or grpc */}}
+{{/*  it shoud be included in voip templates file */}}
 {{- define "libs.rbac" -}}
 {{- range .Values.rbac }}
-{{- if eq .roleExists false }}
-kind: {{ ternary "ClusterRole" "Role" .clusterWide }}
+{{- $clusterWide := (.clusterWide | default false ) }}
+{{- $roleExists := (.roleExists | default false ) }}
+{{- if eq $roleExists false }}
+kind: {{ ternary "ClusterRole" "Role" $clusterWide }}
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  {{- include "resource.metadata" (dict "name" .Chart.Name "context" .) }}
+  name: {{ .roleName }}
+  labels:
+    {{- include "libs.labels" $ | nindent 4 }}
 rules:
   {{ .rules | toYaml | nindent 2 | trim }}
 ---
 {{- end }}
 
-kind: {{ ternary "ClusterRoleBinding" "RoleBinding" .clusterWide }}
+kind: {{ ternary "ClusterRoleBinding" "RoleBinding" $clusterWide }}
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: manager
-  namespace: voip
+  name: {{ .clusterRoleName }}
+  labels:
+    {{- include "libs.labels" $ | nindent 4 }}
 subjects:
   {{ .subjects | toYaml | nindent 2 | trim }}
 roleRef:
-  kind: {{ ternary "ClusterRole" "Role" .clusterWide }}
+  kind: {{ ternary "ClusterRole" "Role" $clusterWide }}
   name: {{ .roleName }}
   apiGroup: rbac.authorization.k8s.io
 ---
