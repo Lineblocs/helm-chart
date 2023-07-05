@@ -18,7 +18,7 @@ ingress:
 app:
   containers:
     - name: app
-      image: lineblocs/user-app
+      image: lineblocs/user-app:master
       ports:
         - containerPort: 8000
   domain: app.
@@ -30,7 +30,7 @@ app:
 com:
   containers:
     - name: site
-      image: lineblocs/site
+      image: lineblocs/site:master
       imagePullPolicy: Always
       livenessProbe:
         httpGet:
@@ -70,7 +70,7 @@ com:
 editor:
   containers:
     - name: editor
-      image: lineblocs/flow-designer
+      image: lineblocs/flow-designer:master
       ports:
         - containerPort: 80
   domain: editor.
@@ -87,7 +87,7 @@ internals:
     targetCPUUtilizationPercentage: 80
   containers:
     - name: lineblocs-internals
-      image: lineblocs/internals-api
+      image: lineblocs/internals-api:master
       ports:
         - containerPort: 80
         - containerPort: 9999
@@ -142,7 +142,7 @@ phpmyadmin:
 routeeditor:
   containers:
     - name: call-route-editor
-      image: lineblocs/call-route-editor
+      image: lineblocs/call-route-editor:master
       ports:
         - containerPort: 8005
   domain: route.
@@ -154,7 +154,7 @@ routeeditor:
 tsbindings:
   containers:
     - name: tsbindings
-      image: lineblocs/ts-bindings
+      image: lineblocs/ts-bindings:master
       ports:
         - containerPort: 8080
   domain: tsc.
