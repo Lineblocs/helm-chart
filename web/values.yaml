@@ -112,9 +112,6 @@ internals:
       - db-secret
       - etcd-secret
     configs:
-      DB_NAME: lineblocs
-      DB_HOST: mysql
-      ETCD_ENDPOINT: http://etcd:2379
       USE_LIMIT_MIDDLEWARE: "off"
       USE_TLS: "off"
       USE_DOTENV: "off"

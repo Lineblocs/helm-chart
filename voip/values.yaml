@@ -46,6 +46,7 @@ asterisk:
     secrets:
       - ari-secret
       - ami-secret
+      - db-secret
       - lineblocs-secret
     configs:
       ARI_USE_PROXY: false
