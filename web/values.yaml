@@ -115,6 +115,14 @@ internals:
       USE_LIMIT_MIDDLEWARE: "off"
       USE_TLS: "off"
       USE_DOTENV: "off"
+  service:
+    ports:
+      - port: 80
+        targetPort: 80
+        name: http
+      - port: 9999
+        targetPort: 9999
+        name: tcp
 
 phpmyadmin:
   containers:
@@ -129,12 +137,11 @@ phpmyadmin:
     configs:
       PMA_PORT: 3306
       PMA_HOST: lineblocs.ckehyurhpc6m.ca-central-1.rds.amazonaws.com
-  services:
-    type: NodePort
+  service:
     ports:
       - port: 80
         protocol: TCP
-        targetPort: 80
+        targetPort: 8015
 
 routeeditor:
   containers:

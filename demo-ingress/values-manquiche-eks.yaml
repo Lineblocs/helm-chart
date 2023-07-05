@@ -3,3 +3,4 @@ certs: {}
 tls:
   enabled: false
   force: false
+webChartReleaseName: web

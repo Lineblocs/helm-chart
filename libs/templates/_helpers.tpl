@@ -94,22 +94,21 @@ Create chart name and version as used by the chart label.
 Usage:
 include "resource.name" (dict "name" "$name" "context" .)*/}}
 {{- define "resource.name" }}
-    {{- if eq .name "" }}
-        {{- include "lineblocs.fullname" .context }}
+    {{- if .nameSuffix }}
+    {{- include "lineblocs.fullname" .context }}-{{ .nameSuffix }}
     {{- else }}
-{{- /*    Lower required here for ingress backends later on*/}}
-        {{- printf "%s-%s" (include "lineblocs.fullname" .context) (lower .name) }}
+    {{- include "lineblocs.fullname" .context }}
     {{- end }}
 {{- end }}
 
 {{/*Generate metadata depending on resource name*/}}
 {{/*Usage:*/}}
-{{/*include "resource.metadata" (dict "name" "$name" "context" .)*/}}
+{{/*include "resource.metadata" (dict "nameSuffix" "$nameSuffix" "context" .)*/}}
 {{- define "resource.metadata" }}
   {{- if .trunc }}
-  name: {{ include "resource.name" (dict "name" .name "context" .context) | trunc .trunc | quote }}
+  name: {{ include "resource.name" (dict "nameSuffix" .nameSuffix "context" .context) | trunc .trunc | quote }}
   {{- else }}
-  name: {{ include "resource.name" (dict "name" .name "context" .context) | quote }}
+  name: {{ include "resource.name" (dict "nameSuffix" .nameSuffix "context" .context) | quote }}
   {{- end }}
   labels:
   {{- with .context }}

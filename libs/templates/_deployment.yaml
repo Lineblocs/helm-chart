@@ -37,8 +37,12 @@ spec:
           volumeMounts:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- /* We try to use first the component version defined, or the one defined for the selected release. If both
-                 are empty, it will print no tag */}}
+          {{- /*
+          This is not used right now and any further deployment has been move to version-table-upgrade branch.
+
+          We try to use first the component version defined, or the one defined for the selected release. If both
+          are empty, it will print no tag.
+          */}}
           {{- $containerTag := "" }}
           {{- if and ($.Values.global.releases) ($.Values.global.release) }}
             {{- $release := get $.Values.global.releases $.Values.global.release }}
