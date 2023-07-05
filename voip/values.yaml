@@ -11,7 +11,7 @@ asterisk:
     targetCPUUtilizationPercentage: 80
   containers:
     - name: asterisk
-      image: lineblocs/asterisk
+      image: lineblocs/asterisk:master
       resources:
         requests:
           cpu: "10m"
@@ -20,7 +20,7 @@ asterisk:
           cpu: "300m"
           memory: "2048Mi"
     - name: apps
-      image: lineblocs/ari-apps
+      image: lineblocs/ari-apps:master
       resources:
         requests:
           cpu: "10m"
@@ -29,7 +29,7 @@ asterisk:
           cpu: "300m"
           memory: "256Mi"
     - name: monitor
-      image: lineblocs/media-monitor
+      image: lineblocs/media-monitor:master
       resources:
         requests:
           cpu: "10m"
@@ -62,7 +62,7 @@ asterisk:
 rtpproxy:
   containers:
     - name: rtpproxy
-      image: lineblocs/rtpproxy
+      image: lineblocs/rtpproxy:master
       resources:
         requests:
           cpu: "10m"
@@ -79,9 +79,9 @@ rtpproxy:
 mngrs:
   containers:
     - name: recordings-mngr
-      image: lineblocs/recordings-mngr
+      image: lineblocs/recordings-mngr:master
     - name: billing-mngr
-      image: lineblocs/billing-mngr
+      image: lineblocs/billing-mngr:master
   envs:
     secrets:
       - ari-secret
@@ -95,7 +95,7 @@ k8sevents:
     - name: k8svents
       image: atomist/k8svent
     - name: events-processor
-      image: lineblocs/k8s-events
+      image: lineblocs/k8s-events:master
       ports:
         - containerPort: 8000
   service:
@@ -112,9 +112,9 @@ opensips:
   controllerType: DaemonSet
   containers:
     - name: opensips
-      image: lineblocs/opensips-proxy
+      image: lineblocs/opensips-proxy:master
     - name: rtpproxy
-      image: lineblocs/rtpproxy
+      image: lineblocs/rtpproxy:master
       resources:
         requests:
           cpu: "100m"
@@ -133,7 +133,7 @@ opensips:
 grpc:
   containers:
     - name: grpc-processor
-      image: lineblocs/grpc-proxy
+      image: lineblocs/grpc-proxy:master
       ports:
         - containerPort: 8017
         - containerPort: 9001
@@ -169,7 +169,7 @@ cronjob-monthly:
   controllerType: CronJob
   containers:
     - name: monthlybill
-      image: lineblocs/crontabs
+      image: lineblocs/crontabs:master
       args:
         - /bin/bash
         - -c
