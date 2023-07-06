@@ -18,7 +18,7 @@ ingress:
 app:
   containers:
     - name: app
-      image: lineblocs/user-app
+      image: lineblocs/user-app:master
       ports:
         - containerPort: 80
   domain: app.
