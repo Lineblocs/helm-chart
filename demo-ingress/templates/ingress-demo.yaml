@@ -3,14 +3,6 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    kubernetes.io/ingress.class: {{ default "nginx" .Values.ingressClassName }}
-    {{- with .Values.certs.issuerName }}
-    cert-manager.io/cluster-issuer: {{ . }}
-    default-ssl-certificate: {{ . }}
-    {{- end }}
-    {{- if .Values.tls.force }}
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    {{- end }}
     {{- with .Values.annotations }}
     {{ . | toYaml | indent 4 | trim }}
     {{- end }}
