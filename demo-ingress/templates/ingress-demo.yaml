@@ -94,7 +94,7 @@ spec:
         paths:
           - backend:
               service:
-                name: {{ .Values.webChartReleaseName }}-tscbindings
+                name: {{ .Values.webChartReleaseName }}-tsbindings
                 port:
                   number: 80
             path: /
