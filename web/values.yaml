@@ -62,6 +62,7 @@ com:
   pvc:
     - name: site
       size: 2Gi
+      storageClassName: ebs-retain
   service:
     ports:
       - port: 80
