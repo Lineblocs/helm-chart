@@ -1,0 +1,8 @@
+# TODO: enforce default tag
+
+global:
+  releases:
+    stable:
+      defaultVersion: stable
+      app:
+        app: master
