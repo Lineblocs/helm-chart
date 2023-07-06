@@ -18,16 +18,21 @@ ingress:
 app:
   containers:
     - name: app
-      image: lineblocs/user-app:master
+      image: lineblocs/user-app
       ports:
-        - containerPort: 8000
+        - containerPort: 80
   domain: app.
   service:
     ports:
       - port: 80
-        targetPort: 8000
+        targetPort: 80
 
 com:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
   containers:
     - name: site
       image: lineblocs/site:master
@@ -130,7 +135,7 @@ phpmyadmin:
     - name: phpmyadmin
       image: phpmyadmin/phpmyadmin
       ports:
-        - containerPort: 8015
+        - containerPort: 80
   envs:
     secret:
       - phpmyadmin-secret
@@ -142,7 +147,7 @@ phpmyadmin:
     ports:
       - port: 80
         protocol: TCP
-        targetPort: 8015
+        targetPort: 80
 
 routeeditor:
   containers:
