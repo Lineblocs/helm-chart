@@ -25,7 +25,7 @@ app:
   service:
     ports:
       - port: 80
-        targetPort: 80
+        targetPort: 8000
 
 com:
   containers:
