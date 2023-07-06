@@ -61,6 +61,11 @@ asterisk:
         targetPort: 80
 
 rtpproxy:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
   containers:
     - name: rtpproxy
       image: lineblocs/rtpproxy:master
@@ -102,6 +107,7 @@ k8sevents:
   service:
     ports:
       - name: webhook
+        targetPort: 8000
         port: 80
   serviceAccountName: voip-lineblocs-admin
   envs:
@@ -133,6 +139,11 @@ opensips:
       DEPLOYMENT_DOMAIN: lineblocs.com
 
 grpc:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
   containers:
     - name: grpc-processor
       image: lineblocs/grpc-proxy:master
