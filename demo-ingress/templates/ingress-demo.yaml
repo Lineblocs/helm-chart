@@ -8,13 +8,6 @@ metadata:
     cert-manager.io/cluster-issuer: {{ . }}
     default-ssl-certificate: {{ . }}
     {{- end }}
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    ingress.kubernetes.io/proxy-body-size: "128m"
-    nginx.org/proxy-connect-timeout: "30s"
-    nginx.org/proxy-read-timeout: "20s"
-    nginx.org/client-max-body-size: "128m"
-    nginx.ingress.kubernetes.io/proxy-body-size: "128m"
     {{- if .Values.tls.force }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     {{- end }}
@@ -22,6 +15,7 @@ metadata:
     {{ . | toYaml | indent 4 | trim }}
     {{- end }}
 spec:
+  ingressClassName: {{ default "nginx" .Values.ingressClassName }}
   {{- if .Values.tls.enabled }}
   tls:
     - hosts:
@@ -70,7 +64,7 @@ spec:
         paths:
           - backend:
               service:
-                name: phpmyadmin-service
+                name: {{ .Values.webChartReleaseName }}-phpmyadmin
                 port:
                   number: {{ .Values.ports }}
             path: /
@@ -100,7 +94,7 @@ spec:
         paths:
           - backend:
               service:
-                name: {{ .Values.webChartReleaseName }}-tsc-compiler
+                name: {{ .Values.webChartReleaseName }}-tscbindings
                 port:
                   number: 80
             path: /
