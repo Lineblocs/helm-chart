@@ -102,6 +102,7 @@ k8sevents:
   service:
     ports:
       - name: webhook
+        targetPort: 8000
         port: 80
   serviceAccountName: voip-lineblocs-admin
   envs:
