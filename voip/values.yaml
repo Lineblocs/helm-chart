@@ -53,8 +53,9 @@ asterisk:
       DEPLOYMENT_DOMAIN: lineblocs-test.com
       GOOGLE_APPLICATION_CREDENTIALS: "/app/service.json"
       LOG_LEVEL: INFO
-      LINEBLOCS_REGION: ca1
+      LINEBLOCS_REGION: xyz
       NATS_URL: nats://natshost:4222
+      CLOUD: ""
   service:
     ports:
       - port: 80
@@ -136,7 +137,7 @@ opensips:
       - lineblocs-secret
     configs:
       RTPPROXY_IPV4: 127.0.0.1
-      DEPLOYMENT_DOMAIN: lineblocs.com
+      CLOUD: ""
 
 grpc:
   autoscaling:
