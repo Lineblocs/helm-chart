@@ -1,7 +1,7 @@
 global:
-  externalMysqlVersion: "5.7"
+  externalMysqlVersion: "8.0"
   envs:
-    DEPLOYMENT_DOMAIN: lineblocs.com
+    DEPLOYMENT_DOMAIN: lineblocs-test.site
 
 # TODO: add tags for components
 
@@ -9,7 +9,7 @@ etcd:
   enabled: false
 
 ingress:
-  enableDemo: true
+  enableDemo: false
   deploymentDomain: lineblocs-test.site
   certs:
     issuerName: myac
