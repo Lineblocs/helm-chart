@@ -1,0 +1,20 @@
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+containers:
+  - name: rtpproxy
+    image: lineblocs/rtpproxy:master
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "128Mi"
+      limits:
+        cpu: "300m"
+        memory: "2048Mi"
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: experimental
+    effect: NoSchedule
