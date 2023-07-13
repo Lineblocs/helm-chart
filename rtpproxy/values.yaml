@@ -1,8 +1,5 @@
-autoscaling:
-  enabled: true
-  minReplicas: 3
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 80
+# TODO: try to restrict on which nodes it gets schedule (cannot be deployed as a Deployment because of too many ports) with nodeSelector
+controllerType: DaemonSet
 containers:
   - name: rtpproxy
     image: lineblocs/rtpproxy:master
@@ -13,8 +10,6 @@ containers:
       limits:
         cpu: "300m"
         memory: "2048Mi"
-tolerations:
-  - key: dedicated
-    operator: Equal
-    value: experimental
-    effect: NoSchedule
+envs:
+  configs:
+    OPENSIPS_HOST: <opensips_url/ip>
