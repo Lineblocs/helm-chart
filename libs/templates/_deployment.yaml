@@ -85,16 +85,19 @@ spec:
           resources: {{ toYaml . | nindent 12 }}
           {{- end }}
       {{- end }}
-      {{- with .nodeSelector }}
+      {{- with .Values.hostNetwork}}
+      hostNetwork: {{ . }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .affinity }}
+      {{- with .Values.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .tolerations }}
+      {{- with .Values.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .serviceAccountName }}
+      {{- with .Values.serviceAccountName }}
       serviceAccountName: {{ . }}
       {{- end }}
 ---
