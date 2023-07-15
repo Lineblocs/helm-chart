@@ -3,8 +3,6 @@ global:
   envs:
     DEPLOYMENT_DOMAIN: lineblocs-test.site
 
-# TODO: add tags for components
-
 etcd:
   enabled: false
 
