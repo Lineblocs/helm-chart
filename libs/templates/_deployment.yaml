@@ -91,8 +91,17 @@ spec:
       {{- with .Values.nodeSelector }}
       nodeSelector: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
-      affinity: {{ toYaml . | nindent 8 }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      # TODO: review name of the var with Nadir
+      {{- else if .Values.expandPods }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  {{- include "libs.labels" . | nindent 20 }}
+              topologyKey: "kubernetes.io/hostname"
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
