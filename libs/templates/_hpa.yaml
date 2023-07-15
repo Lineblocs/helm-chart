@@ -13,14 +13,18 @@ spec:
     name: {{ include "libs.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  {{- if .Values.behavior }}
+  behavior: {{ toYaml .Values.behavior | nindent 4 }}
+  {{- else if .Values.scaleDownSeconds }}
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: {{ .Values.scaleDownSeconds }}
       policies:
         - type: Pods
           value: 1
-          periodSeconds: 300
+          periodSeconds: {{ .Values.scaleDownSeconds }}
       selectPolicy: Max
+  {{- end }}
   metrics:
       {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource

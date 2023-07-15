@@ -1,72 +1,76 @@
 global:
   externalMysqlVersion: "5.7"
 
-# TODO: add tags for components
-
 asterisk:
+  #nodeSelector:
+  #  mediaServerNode: 'true'
   autoscaling:
     enabled: true
-    minReplicas: 3
     maxReplicas: 10
+    minReplicas: 3
     targetCPUUtilizationPercentage: 80
+    scaleDownSeconds: 300
   containers:
-    - name: asterisk
-      image: lineblocs/asterisk:master
-      resources:
-        requests:
-          cpu: "10m"
-          memory: "128Mi"
-        limits:
-          cpu: "300m"
-          memory: "2048Mi"
     - name: apps
       image: lineblocs/ari-apps:master
       resources:
-        requests:
-          cpu: "10m"
-          memory: "128Mi"
         limits:
           cpu: "300m"
           memory: "256Mi"
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+    - name: asterisk
+      image: lineblocs/asterisk:master
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "2048Mi"
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
     - name: monitor
       image: lineblocs/media-monitor:master
       resources:
-        requests:
-          cpu: "10m"
-          memory: "128Mi"
         limits:
           cpu: "300m"
           memory: "256Mi"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: experimental
-      effect: NoSchedule
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
   envs:
-    secrets:
-      - ari-secret
-      - ami-secret
-      - db-secret
-      - lineblocs-secret
     configs:
       ARI_USE_PROXY: false
+      CLOUD: ""
       DEPLOYMENT_DOMAIN: lineblocs-test.com
       GOOGLE_APPLICATION_CREDENTIALS: "/app/service.json"
-      LOG_LEVEL: INFO
       LINEBLOCS_REGION: xyz
+      LOG_LEVEL: INFO
       NATS_URL: nats://natshost:4222
-      CLOUD: ""
+    secrets:
+      - ami-secret
+      - ari-secret
+      - db-secret
+      - lineblocs-secret
+  expandNode: true
+  hostNetwork: true
   service:
     ports:
       - port: 80
         targetPort: 80
+  tolerations:
+    - key: dedicated
+      effect: NoSchedule
+      operator: Equal
+      value: experimental
 
 rtpproxy:
   autoscaling:
     enabled: true
     minReplicas: 3
-    maxReplicas: 10
+    maxReplicas: 10000
     targetCPUUtilizationPercentage: 80
+    scaleDownSeconds: 300
   containers:
     - name: rtpproxy
       image: lineblocs/rtpproxy:master
@@ -77,6 +81,8 @@ rtpproxy:
         limits:
           cpu: "300m"
           memory: "2048Mi"
+  hostNetwork: true
+  expandPods: true
   tolerations:
     - key: dedicated
       operator: Equal
@@ -138,6 +144,7 @@ opensips:
     configs:
       RTPPROXY_IPV4: 127.0.0.1
       CLOUD: ""
+  hostNetwork: true
 
 grpc:
   autoscaling:
@@ -145,6 +152,7 @@ grpc:
     minReplicas: 3
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
+    scaleDownSeconds: 300
   containers:
     - name: grpc-processor
       image: lineblocs/grpc-proxy:master

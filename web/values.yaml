@@ -3,8 +3,6 @@ global:
   envs:
     DEPLOYMENT_DOMAIN: lineblocs-test.site
 
-# TODO: add tags for components
-
 etcd:
   enabled: false
 
@@ -21,7 +19,6 @@ app:
       image: lineblocs/user-app:master
       ports:
         - containerPort: 80
-  domain: app.
   service:
     ports:
       - port: 80
@@ -33,6 +30,7 @@ com:
     minReplicas: 1
     maxReplicas: 5
     targetCPUUtilizationPercentage: 80
+    scaleDownSeconds: 300
   containers:
     - name: site
       image: lineblocs/site:master
@@ -58,7 +56,6 @@ com:
       volumeMounts:
         - name: site
           mountPath: /var/www/html/storage/app/public
-  domain: com.
   envs:
     configs:
       DB_OPENSIPS_DATABASE: opensips
@@ -79,7 +76,6 @@ editor:
       image: lineblocs/flow-designer:master
       ports:
         - containerPort: 80
-  domain: editor.
   service:
     ports:
       - port: 80
@@ -91,6 +87,7 @@ internals:
     minReplicas: 3
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
+    scaleDownSeconds: 300
   containers:
     - name: lineblocs-internals
       image: lineblocs/internals-api:master
@@ -144,6 +141,7 @@ phpmyadmin:
       PMA_PORT: 3306
       PMA_HOST: lineblocs.ckehyurhpc6m.ca-central-1.rds.amazonaws.com
   service:
+    type: NodePort
     ports:
       - port: 80
         protocol: TCP
@@ -155,7 +153,6 @@ routeeditor:
       image: lineblocs/call-route-editor:master
       ports:
         - containerPort: 8005
-  domain: route.
   service:
     ports:
       - port: 80
@@ -167,7 +164,6 @@ tsbindings:
       image: lineblocs/ts-bindings:master
       ports:
         - containerPort: 8080
-  domain: tsc.
   service:
     ports:
       - port: 80
