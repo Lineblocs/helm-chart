@@ -5,7 +5,12 @@ This projects contains helm charts needed to deploy Lineblocs services.
 ## Description
 
 This project provides a Helm chart for deploying Lineblocs services onto a Kubernetes cluster. Helm is a package manager
-for Kubernetes that makes it easy to define, install, and manage applications as Helm charts.
+for Kubernetes that makes it easy to define, install, and manage applications as Helm charts. Charts in this repository
+are represented as parent and child charts to maximize re-usability and minimize duplicates. You can find a simple 
+diagram showing interactions between the charts at the end of the file.
+
+You will find two main charts : `web` and `voip`. Alongside, you will find standalone charts like `rtpproxy` and other 
+folders with useful contents like `database`, `secrets` or `libs`. 
 
 ## Table of Contents
 
@@ -78,6 +83,8 @@ To install the Helm chart, follow these steps:
 
 For more detailed instructions on installing and managing Helm charts, please refer to
 the [Helm documentation](https://helm.sh/docs/).
+
+PS: you will find some other useful resources in `infrastructure`, `secrets` and `database` folders.
 
 ## Configuration
 
@@ -265,3 +272,8 @@ Here is a list of the ones you will need to create :
 
 For more details about Kubernetes secrets, please refer
 to [this documentation](https://kubernetes.io/fr/docs/concepts/configuration/secret/).
+
+
+## Appendix
+
+![charts interactions diagram](doc/charts.png)
