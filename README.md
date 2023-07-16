@@ -258,10 +258,6 @@ Here is a list of the ones you will need to create :
     - DB_USER, DB_PASS, DB_NAME, DB_HOST
 - lineblocs-secret
     - LINEBLOCS_KEY
-- mailgun-secret
-    - MAILGUN_DOMAIN, MAILGUN_API_KEY
-- stripe-secret
-    - STRIPE_KEY
 
 ### web
 
@@ -272,6 +268,7 @@ Here is a list of the ones you will need to create :
 
 For more details about Kubernetes secrets, please refer
 to [this documentation](https://kubernetes.io/fr/docs/concepts/configuration/secret/).
+
 
 
 ## Appendix
