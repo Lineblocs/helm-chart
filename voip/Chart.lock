@@ -20,5 +20,8 @@ dependencies:
 - name: libs
   repository: ""
   version: 0.1.0
-digest: sha256:21b0e684cfab5ba4c899dc1e9a1225c305ae8ec4dae89fa2e7577faf7092ddd8
-generated: "2023-06-06T18:58:44.94757758Z"
+- name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 18.0.4
+digest: sha256:4d52a6b4a0a4071c781860b02d897feb34e3c432aeb4acb9436e9debc6e5646a
+generated: "2023-09-15T13:25:32.836739793+02:00"

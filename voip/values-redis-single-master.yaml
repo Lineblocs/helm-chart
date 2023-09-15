@@ -1,0 +1,15 @@
+# This is a simple Redis deployment with one master and no replication whatsoever.
+redis:
+  architecture: standalone
+  auth:
+    existingSecret: redis-secret
+    existingSecretPasswordKey: PASSWORD
+  sentinel:
+    enabled: false
+  master:
+    count: 1
+    persistence:
+      storageClass: <your-storage-class>
+      size: 2Gi
+  replica:
+    replicaCount: 0

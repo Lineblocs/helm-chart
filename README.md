@@ -50,7 +50,8 @@ To install the Helm chart, follow these steps:
 
 4. Go in `web` or `voip` charts folder.
 
-5. Customize the chart's values in the `values.yaml` file according to your requirements.
+5. Customize the chart's values in the `values.yaml` file according to your requirements or even better: create a new one.
+   Please make sure that the storage classes used are the ones you want depending on your cloud provider.
 
 6. Don't forget to do either a build or an update of Helm dependencies if you haven't already :
 
@@ -258,6 +259,8 @@ Here is a list of the ones you will need to create :
     - DB_USER, DB_PASS, DB_NAME, DB_HOST
 - lineblocs-secret
     - LINEBLOCS_KEY
+- (optional, if you configured it) redis-secret
+  - PASSWORD
 
 ### web
 
