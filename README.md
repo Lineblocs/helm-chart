@@ -36,11 +36,13 @@ To install the Helm chart, follow these steps:
 
 1. Make sure you have Helm installed on your local machine and have configured it to connect to your Kubernetes cluster.
 
+
 2. Clone this repository to your local machine.
 
    ```bash
    git clone https://github.com/Lineblocs/helm-chart.git
    ```
+
 
 3. Change into the cloned directory.
 
@@ -48,10 +50,13 @@ To install the Helm chart, follow these steps:
    cd helm-chart
    ```
 
+
 4. Go in `web` or `voip` charts folder.
+
 
 5. Customize the chart's values in the `values.yaml` file according to your requirements or even better: create a new one.
    Please make sure that the storage classes used are the ones you want depending on your cloud provider.
+
 
 6. Don't forget to do either a build or an update of Helm dependencies if you haven't already :
 
@@ -82,6 +87,10 @@ To install the Helm chart, follow these steps:
    put the desired release you want to install. Please note that the `tag` field defined in components values overrides
    releases tags.
 
+
+8. Lineblocs charts come with default values like password for Redis, etc... You should customize these values to
+   your need as default values in production is a security breach.
+
 For more detailed instructions on installing and managing Helm charts, please refer to
 the [Helm documentation](https://helm.sh/docs/).
 
@@ -94,7 +103,7 @@ web
 and voip, there are all the services deployed. Each one uses `libs` charts (located at the root of this project) as
 base.
 
-Here is the content of web chart folder :
+Here is the content of web chart folder (this example might be outdated):
 
 ```
 ├── Chart.lock # contains precise information about what version of dependencies have been used
@@ -259,15 +268,22 @@ Here is a list of the ones you will need to create :
     - DB_USER, DB_PASS, DB_NAME, DB_HOST
 - lineblocs-secret
     - LINEBLOCS_KEY
-- (optional, if you configured it) redis-secret
+- redis-conf (used by redis to configure itself)
+  - HOST
   - PASSWORD
+- redis-secret (used by components)
+    - HOST
+    - USER
+    - PASSWORD
 
 ### web
 
 - db-secret
     - DB_USER, DB_PASS, DB_NAME, DB_HOST
-- etcd-secret
-    - ETCD_ENDPOINT, ETCD_USERNAME, ETCD_PASSWORD
+- redis-secret
+    - HOST
+    - USER
+    - PASSWORD
 
 For more details about Kubernetes secrets, please refer
 to [this documentation](https://kubernetes.io/fr/docs/concepts/configuration/secret/).

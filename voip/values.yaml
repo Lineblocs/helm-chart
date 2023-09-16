@@ -242,7 +242,7 @@ cronjob-monthly:
 # Also, please make sure that the reclaim policy of your storage class is the proper one for your use case.
 redis:
   auth:
-    existingSecret: redis-secret
+    existingSecret: redis-conf
     existingSecretPasswordKey: PASSWORD
   master:
     count: 1
