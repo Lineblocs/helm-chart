@@ -1,0 +1,44 @@
+# This version deploys one master and three replicas. Writes will go to the master node.
+#
+#                            Writes
+#                               │
+#                               │
+#                               ▼
+#                           ┌───────┐
+#           ┌───────────────┤k8s svc├───────────────┐
+#           │               └───┬───┘               │
+#           │                   │                   │
+#           │                   │                   │
+#           ▼                   ▼                   ▼
+#  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
+#  │                │  │                │  │                │
+#  │                │  │                │  │                │
+#  │    Replica     │  │    Replica     │  │   Replica      │
+#  │                │  │                │  │                │
+#  │                │  │                │  │                │
+#  └─────┬──────────┤  └─────┬──────────┤  └─────┬──────────┤
+#        ├──────────┤        ├──────────┤        ├──────────┤
+#        │          │        │          │        │          │
+#        │ Sentinel │        │ Sentinel │        │ Sentinel │
+#        │          │        │          │        │          │
+#        └──────────┘        └──────────┘        └──────────┘
+#
+# Master instance gets elected and will receive write requests.
+#
+redis:
+  auth:
+    existingSecret: redis-conf
+    existingSecretPasswordKey: PASSWORD
+  master:
+    count: 1
+    persistence:
+      storageClass: <your-storage-class>
+      size: 2Gi
+  replica:
+    replicaCount: 3
+    persistence:
+      storageClass: <your-storage-class>
+      size: 2Gi
+  sentinel:
+    enabled: true
+    masterSet: lineblocs-redis

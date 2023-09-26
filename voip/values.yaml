@@ -206,57 +206,28 @@ cronjob-monthly:
 
 # Here is a basic redis deployment, you can tweak it with the help of this README:
 # https://github.com/bitnami/charts/blob/main/bitnami/redis/README.md
-# This version deploys one master and three replicas. Writes will go to the master node.
 #
-#                            Writes
-#                               │
-#                               │
-#                               ▼
-#                           ┌───────┐
-#           ┌───────────────┤k8s svc├───────────────┐
-#           │               └───┬───┘               │
-#           │                   │                   │
-#           │                   │                   │
-#           ▼                   ▼                   ▼
-#  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
-#  │                │  │                │  │                │
-#  │                │  │                │  │                │
-#  │    Replica     │  │    Replica     │  │   Replica      │
-#  │                │  │                │  │                │
-#  │                │  │                │  │                │
-#  └─────┬──────────┤  └─────┬──────────┤  └─────┬──────────┤
-#        ├──────────┤        ├──────────┤        ├──────────┤
-#        │          │        │          │        │          │
-#        │ Sentinel │        │ Sentinel │        │ Sentinel │
-#        │          │        │          │        │          │
-#        └──────────┘        └──────────┘        └──────────┘
-#
-# Master instance gets elected and will receive write requests.
-#
-#
-# If you prefer a simpler deployment, you can use values-redis-single-master.yaml as values.
+# If you prefer a deployment with GA in mind, you can use values-redis-sentinel.yaml as values.
 #
 # Please not these are default values. If you use another file, this object will be merged with the new one, not replaced.
 # So any field which is not overwritten will still exist.
 #
 # Also, please make sure that the reclaim policy of your storage class is the proper one for your use case.
+# This is a simple Redis deployment with one master and no replication whatsoever.
 redis:
+  architecture: standalone
   auth:
-    existingSecret: redis-conf
+    existingSecret: redis-secret
     existingSecretPasswordKey: PASSWORD
+  sentinel:
+    enabled: false
   master:
     count: 1
     persistence:
       storageClass: <your-storage-class>
       size: 2Gi
   replica:
-    replicaCount: 3
-    persistence:
-      storageClass: <your-storage-class>
-      size: 2Gi
-  sentinel:
-    enabled: true
-    masterSet: lineblocs-redis
+    replicaCount: 0
   tls:
     enabled: false
   rbac:
