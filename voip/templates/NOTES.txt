@@ -21,3 +21,5 @@ Also, be sure that a metrics-server is present on the destination cluster. You c
 following command:
 
 kubectl get deploy,svc -n kube-system | grep metrics-server
+
+PS: Don't forget Redis secret if you referenced one!

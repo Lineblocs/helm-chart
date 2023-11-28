@@ -113,7 +113,7 @@ internals:
   envs:
     secrets:
       - db-secret
-      - etcd-secret
+      - redis-secret
     configs:
       USE_LIMIT_MIDDLEWARE: "off"
       USE_TLS: "off"

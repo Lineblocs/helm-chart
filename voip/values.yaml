@@ -66,7 +66,7 @@ asterisk:
 
 rtpproxy:
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 3
     maxReplicas: 10000
     targetCPUUtilizationPercentage: 80
@@ -203,6 +203,35 @@ cronjob-monthly:
       - aws-secret
       - mailgun-secret
       - stripe-secret
+
+# Here is a basic redis deployment, you can tweak it with the help of this README:
+# https://github.com/bitnami/charts/blob/main/bitnami/redis/README.md
+#
+# If you prefer a deployment with GA in mind, you can use values-redis-sentinel.yaml as values.
+#
+# Please not these are default values. If you use another file, this object will be merged with the new one, not replaced.
+# So any field which is not overwritten will still exist.
+#
+# Also, please make sure that the reclaim policy of your storage class is the proper one for your use case.
+# This is a simple Redis deployment with one master and no replication whatsoever.
+redis:
+  architecture: standalone
+  auth:
+    existingSecret: redis-secret
+    existingSecretPasswordKey: PASSWORD
+  sentinel:
+    enabled: false
+  master:
+    count: 1
+    persistence:
+      storageClass: <your-storage-class>
+      size: 2Gi
+  replica:
+    replicaCount: 0
+  tls:
+    enabled: false
+  rbac:
+    create: false
 
 # These RBAC rules are only for testing right now
 # TODO: Add proper, fine-grained rules
