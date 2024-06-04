@@ -262,7 +262,7 @@ Here is a list of the ones you will need to create :
 ### web
 
 - db-secret
-    - DB_USER, DB_PASS, DB_NAME, DB_HOST
+    - DB_USER, DB_PASS, DB_NAME, DB_HOST, DB_OPENSIPS, DB_HOMER
 - etcd-secret
     - ETCD_ENDPOINT, ETCD_USERNAME, ETCD_PASSWORD
 
