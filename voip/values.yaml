@@ -99,6 +99,7 @@ mngrs:
     secrets:
       - ari-secret
       - db-secret
+      - lineblocs-secret
     configs:
       DEPLOYMENT_DOMAIN: lineblocs.com
       LOG_LEVEL: INFO
@@ -120,6 +121,7 @@ k8sevents:
   envs:
     secrets:
       - db-secret
+      - lineblocs-secret
     configs:
       K8SEVENT_WEBHOOKS: http://127.0.0.1:8000/processEvent
 
@@ -184,6 +186,7 @@ grpc:
   envs:
     secrets:
       - db-secret
+      - lineblocs-secret
     configs:
       LINEBLOCS_REGION: ca1
 
@@ -203,6 +206,7 @@ cronjob-monthly:
       - aws-secret
       - mailgun-secret
       - stripe-secret
+      - lineblocs-secret
 
 # These RBAC rules are only for testing right now
 # TODO: Add proper, fine-grained rules

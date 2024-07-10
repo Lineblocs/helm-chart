@@ -61,6 +61,7 @@ com:
       DB_OPENSIPS_DATABASE: opensips
     secrets:
       - db-secret
+      - lineblocs-secret
   pvc:
     - name: site
       size: 2Gi
@@ -114,6 +115,7 @@ internals:
     secrets:
       - db-secret
       - etcd-secret
+      - lineblocs-secret
     configs:
       USE_LIMIT_MIDDLEWARE: "off"
       USE_TLS: "off"
