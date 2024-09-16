@@ -1,0 +1,5 @@
+com:
+  pvc:
+    - name: site
+      size: 2Gi
+      storageClassName: azurefile
